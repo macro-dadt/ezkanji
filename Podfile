@@ -8,23 +8,19 @@ use_frameworks!
 
 target 'KanjiApp' do
     
-    pod 'RealmSwift'
+   
     pod 'SwiftyJSON', :git => 'https://github.com/acegreen/SwiftyJSON.git', :branch => 'swift3'
     pod 'Alamofire'
     pod 'SDWebImage’
     pod 'SVProgressHUD'
     pod 'Fabric'
     pod 'Crashlytics'
-    pod 'FacebookCore'
-    pod 'FacebookLogin'
-    pod 'FacebookShare'
-    pod  'FBSDKCoreKit'
-    pod  'FBSDKLoginKit'
     pod 'Google/Analytics'
     pod 'Google/SignIn'
     pod 'Firebase/Core'
     pod 'Firebase/AdMob'
-    pod 'SwiftLint'
+    pod 'SQLite.swift', '~> 0.11.3'
+    pod 'GRDB.swift'
 end
 
 target 'KanjiAppTests' do

@@ -8,10 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03CC00135CAAB941580E5335 /* Pods_KanjiAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C14A2DCC2304102572A50768 /* Pods_KanjiAppTests.framework */; };
-		5C506AE51F1242F400E490BC /* CSVDataImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C506AE11F1242F400E490BC /* CSVDataImporter.swift */; };
-		5C506AE61F1242F400E490BC /* DataImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C506AE21F1242F400E490BC /* DataImporter.swift */; };
-		5C506AE71F1242F400E490BC /* JSONDataImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C506AE31F1242F400E490BC /* JSONDataImporter.swift */; };
-		5C506AE81F1242F400E490BC /* XLSXDataImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C506AE41F1242F400E490BC /* XLSXDataImporter.swift */; };
+		5C2C69831F3F38C3005C2F66 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C2C69821F3F38C3005C2F66 /* libsqlite3.tbd */; };
 		5C5F417B1F11E8EE000E4F7C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F417A1F11E8EE000E4F7C /* AppDelegate.swift */; };
 		5C5F417D1F11E8EE000E4F7C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F417C1F11E8EE000E4F7C /* ViewController.swift */; };
 		5C5F41801F11E8EE000E4F7C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C5F417E1F11E8EE000E4F7C /* Main.storyboard */; };
@@ -21,8 +18,6 @@
 		5C5F419B1F11E8EE000E4F7C /* KanjiAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F419A1F11E8EE000E4F7C /* KanjiAppUITests.swift */; };
 		5C5F41BA1F1212B4000E4F7C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F41B91F1212B4000E4F7C /* User.swift */; };
 		5C5F41BC1F12264E000E4F7C /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F41BB1F12264E000E4F7C /* UserService.swift */; };
-		5C5F41BE1F122DFA000E4F7C /* KanjiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F41BD1F122DFA000E4F7C /* KanjiService.swift */; };
-		5C5F41C11F1233F8000E4F7C /* Kanji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F41C01F1233F8000E4F7C /* Kanji.swift */; };
 		DDF85D8D4436E3787763FB90 /* Pods_KanjiApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FFDEDEEAB5F3C746E92BDCD /* Pods_KanjiApp.framework */; };
 		EF0BE43CC4E5BA33D44C667A /* Pods_KanjiAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E79DC9D189AE0A74A322BEDE /* Pods_KanjiAppUITests.framework */; };
 /* End PBXBuildFile section */
@@ -47,10 +42,7 @@
 /* Begin PBXFileReference section */
 		4016E633C4CE4104BF92E6DF /* Pods-KanjiAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KanjiAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KanjiAppTests/Pods-KanjiAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		40AA102E7C8DD995649A9C13 /* Pods-KanjiAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KanjiAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KanjiAppUITests/Pods-KanjiAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		5C506AE11F1242F400E490BC /* CSVDataImporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSVDataImporter.swift; sourceTree = "<group>"; };
-		5C506AE21F1242F400E490BC /* DataImporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataImporter.swift; sourceTree = "<group>"; };
-		5C506AE31F1242F400E490BC /* JSONDataImporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONDataImporter.swift; sourceTree = "<group>"; };
-		5C506AE41F1242F400E490BC /* XLSXDataImporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XLSXDataImporter.swift; sourceTree = "<group>"; };
+		5C2C69821F3F38C3005C2F66 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		5C5F41771F11E8EE000E4F7C /* KanjiApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KanjiApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C5F417A1F11E8EE000E4F7C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5C5F417C1F11E8EE000E4F7C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -66,8 +58,6 @@
 		5C5F419C1F11E8EE000E4F7C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C5F41B91F1212B4000E4F7C /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		5C5F41BB1F12264E000E4F7C /* UserService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
-		5C5F41BD1F122DFA000E4F7C /* KanjiService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KanjiService.swift; sourceTree = "<group>"; };
-		5C5F41C01F1233F8000E4F7C /* Kanji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Kanji.swift; sourceTree = "<group>"; };
 		777E290574292043E3D30109 /* Pods-KanjiAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KanjiAppUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KanjiAppUITests/Pods-KanjiAppUITests.release.xcconfig"; sourceTree = "<group>"; };
 		83963C0FA12910C359444212 /* Pods-KanjiApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KanjiApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KanjiApp/Pods-KanjiApp.debug.xcconfig"; sourceTree = "<group>"; };
 		9FFDEDEEAB5F3C746E92BDCD /* Pods_KanjiApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KanjiApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -82,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C2C69831F3F38C3005C2F66 /* libsqlite3.tbd in Frameworks */,
 				DDF85D8D4436E3787763FB90 /* Pods_KanjiApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,15 +109,42 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
-		5C506AE01F1242F400E490BC /* Importer */ = {
+		5C2C69851F3F3D72005C2F66 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
-				5C506AE11F1242F400E490BC /* CSVDataImporter.swift */,
-				5C506AE21F1242F400E490BC /* DataImporter.swift */,
-				5C506AE31F1242F400E490BC /* JSONDataImporter.swift */,
-				5C506AE41F1242F400E490BC /* XLSXDataImporter.swift */,
 			);
-			path = Importer;
+			name = Helper;
+			sourceTree = "<group>";
+		};
+		5C2C69861F3F3D9B005C2F66 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				5C2C69891F3F3DCB005C2F66 /* data */,
+				5C2C69881F3F3DC4005C2F66 /* raw */,
+				5C2C69871F3F3DAD005C2F66 /* icons */,
+			);
+			name = Resource;
+			sourceTree = "<group>";
+		};
+		5C2C69871F3F3DAD005C2F66 /* icons */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = icons;
+			sourceTree = "<group>";
+		};
+		5C2C69881F3F3DC4005C2F66 /* raw */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = raw;
+			sourceTree = "<group>";
+		};
+		5C2C69891F3F3DCB005C2F66 /* data */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = data;
 			sourceTree = "<group>";
 		};
 		5C5F416E1F11E8EE000E4F7C = {
@@ -154,7 +172,8 @@
 		5C5F41791F11E8EE000E4F7C /* KanjiApp */ = {
 			isa = PBXGroup;
 			children = (
-				5C506AE01F1242F400E490BC /* Importer */,
+				5C2C69861F3F3D9B005C2F66 /* Resource */,
+				5C2C69851F3F3D72005C2F66 /* Helper */,
 				5C5F41B51F11F2A4000E4F7C /* View */,
 				5C5F41B41F11F29A000E4F7C /* Controller */,
 				5C5F41B31F11F287000E4F7C /* Model */,
@@ -221,8 +240,6 @@
 		5C5F41BF1F122E02000E4F7C /* Kanji */ = {
 			isa = PBXGroup;
 			children = (
-				5C5F41BD1F122DFA000E4F7C /* KanjiService.swift */,
-				5C5F41C01F1233F8000E4F7C /* Kanji.swift */,
 			);
 			name = Kanji;
 			sourceTree = "<group>";
@@ -230,6 +247,7 @@
 		E519A7C649706DF6974A4C53 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5C2C69821F3F38C3005C2F66 /* libsqlite3.tbd */,
 				9FFDEDEEAB5F3C746E92BDCD /* Pods_KanjiApp.framework */,
 				C14A2DCC2304102572A50768 /* Pods_KanjiAppTests.framework */,
 				E79DC9D189AE0A74A322BEDE /* Pods_KanjiAppUITests.framework */,
@@ -522,15 +540,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C5F41BC1F12264E000E4F7C /* UserService.swift in Sources */,
-				5C506AE61F1242F400E490BC /* DataImporter.swift in Sources */,
-				5C506AE81F1242F400E490BC /* XLSXDataImporter.swift in Sources */,
 				5C5F417D1F11E8EE000E4F7C /* ViewController.swift in Sources */,
 				5C5F417B1F11E8EE000E4F7C /* AppDelegate.swift in Sources */,
-				5C5F41BE1F122DFA000E4F7C /* KanjiService.swift in Sources */,
-				5C506AE71F1242F400E490BC /* JSONDataImporter.swift in Sources */,
-				5C506AE51F1242F400E490BC /* CSVDataImporter.swift in Sources */,
 				5C5F41BA1F1212B4000E4F7C /* User.swift in Sources */,
-				5C5F41C11F1233F8000E4F7C /* Kanji.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
