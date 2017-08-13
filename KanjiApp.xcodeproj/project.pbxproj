@@ -9,10 +9,12 @@
 /* Begin PBXBuildFile section */
 		03CC00135CAAB941580E5335 /* Pods_KanjiAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C14A2DCC2304102572A50768 /* Pods_KanjiAppTests.framework */; };
 		5C2C69831F3F38C3005C2F66 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C2C69821F3F38C3005C2F66 /* libsqlite3.tbd */; };
+		5C2C698B1F3F5530005C2F66 /* DatabaseHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C698A1F3F5530005C2F66 /* DatabaseHelper.swift */; };
+		5C2C69901F3FE853005C2F66 /* Kanji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C698F1F3FE853005C2F66 /* Kanji.swift */; };
+		5C2C69AE1F402B02005C2F66 /* database.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 5C2C69AD1F402B02005C2F66 /* database.sqlite */; };
 		5C5F417B1F11E8EE000E4F7C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F417A1F11E8EE000E4F7C /* AppDelegate.swift */; };
 		5C5F417D1F11E8EE000E4F7C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F417C1F11E8EE000E4F7C /* ViewController.swift */; };
 		5C5F41801F11E8EE000E4F7C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C5F417E1F11E8EE000E4F7C /* Main.storyboard */; };
-		5C5F41821F11E8EE000E4F7C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C5F41811F11E8EE000E4F7C /* Assets.xcassets */; };
 		5C5F41851F11E8EE000E4F7C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C5F41831F11E8EE000E4F7C /* LaunchScreen.storyboard */; };
 		5C5F41901F11E8EE000E4F7C /* KanjiAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F418F1F11E8EE000E4F7C /* KanjiAppTests.swift */; };
 		5C5F419B1F11E8EE000E4F7C /* KanjiAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F419A1F11E8EE000E4F7C /* KanjiAppUITests.swift */; };
@@ -43,11 +45,13 @@
 		4016E633C4CE4104BF92E6DF /* Pods-KanjiAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KanjiAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KanjiAppTests/Pods-KanjiAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		40AA102E7C8DD995649A9C13 /* Pods-KanjiAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KanjiAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KanjiAppUITests/Pods-KanjiAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		5C2C69821F3F38C3005C2F66 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		5C2C698A1F3F5530005C2F66 /* DatabaseHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseHelper.swift; sourceTree = "<group>"; };
+		5C2C698F1F3FE853005C2F66 /* Kanji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Kanji.swift; sourceTree = "<group>"; };
+		5C2C69AD1F402B02005C2F66 /* database.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.sqlite; sourceTree = "<group>"; };
 		5C5F41771F11E8EE000E4F7C /* KanjiApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KanjiApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C5F417A1F11E8EE000E4F7C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5C5F417C1F11E8EE000E4F7C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		5C5F417F1F11E8EE000E4F7C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		5C5F41811F11E8EE000E4F7C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5C5F41841F11E8EE000E4F7C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5C5F41861F11E8EE000E4F7C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C5F418B1F11E8EE000E4F7C /* KanjiAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KanjiAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,6 +116,7 @@
 		5C2C69851F3F3D72005C2F66 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				5C2C698A1F3F5530005C2F66 /* DatabaseHelper.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -143,8 +148,25 @@
 		5C2C69891F3F3DCB005C2F66 /* data */ = {
 			isa = PBXGroup;
 			children = (
+				5C2C69AD1F402B02005C2F66 /* database.sqlite */,
 			);
 			name = data;
+			sourceTree = "<group>";
+		};
+		5C2C69AF1F409F10005C2F66 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				5C5F417C1F11E8EE000E4F7C /* ViewController.swift */,
+			);
+			name = Main;
+			sourceTree = "<group>";
+		};
+		5C2C69B01F409F25005C2F66 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				5C5F417E1F11E8EE000E4F7C /* Main.storyboard */,
+			);
+			name = Main;
 			sourceTree = "<group>";
 		};
 		5C5F416E1F11E8EE000E4F7C = {
@@ -178,9 +200,6 @@
 				5C5F41B41F11F29A000E4F7C /* Controller */,
 				5C5F41B31F11F287000E4F7C /* Model */,
 				5C5F417A1F11E8EE000E4F7C /* AppDelegate.swift */,
-				5C5F417C1F11E8EE000E4F7C /* ViewController.swift */,
-				5C5F417E1F11E8EE000E4F7C /* Main.storyboard */,
-				5C5F41811F11E8EE000E4F7C /* Assets.xcassets */,
 				5C5F41831F11E8EE000E4F7C /* LaunchScreen.storyboard */,
 				5C5F41861F11E8EE000E4F7C /* Info.plist */,
 			);
@@ -217,6 +236,7 @@
 		5C5F41B41F11F29A000E4F7C /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				5C2C69AF1F409F10005C2F66 /* Main */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -224,6 +244,7 @@
 		5C5F41B51F11F2A4000E4F7C /* View */ = {
 			isa = PBXGroup;
 			children = (
+				5C2C69B01F409F25005C2F66 /* Main */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -240,6 +261,7 @@
 		5C5F41BF1F122E02000E4F7C /* Kanji */ = {
 			isa = PBXGroup;
 			children = (
+				5C2C698F1F3FE853005C2F66 /* Kanji.swift */,
 			);
 			name = Kanji;
 			sourceTree = "<group>";
@@ -374,8 +396,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C2C69AE1F402B02005C2F66 /* database.sqlite in Resources */,
 				5C5F41851F11E8EE000E4F7C /* LaunchScreen.storyboard in Resources */,
-				5C5F41821F11E8EE000E4F7C /* Assets.xcassets in Resources */,
 				5C5F41801F11E8EE000E4F7C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -540,9 +562,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C5F41BC1F12264E000E4F7C /* UserService.swift in Sources */,
+				5C2C698B1F3F5530005C2F66 /* DatabaseHelper.swift in Sources */,
 				5C5F417D1F11E8EE000E4F7C /* ViewController.swift in Sources */,
 				5C5F417B1F11E8EE000E4F7C /* AppDelegate.swift in Sources */,
 				5C5F41BA1F1212B4000E4F7C /* User.swift in Sources */,
+				5C2C69901F3FE853005C2F66 /* Kanji.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

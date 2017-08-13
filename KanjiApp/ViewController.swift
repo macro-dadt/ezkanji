@@ -12,6 +12,8 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var label: UILabel!
     override func viewDidLoad() {
+        
+        label.text = (String)(DatabaseHelper.getKanjis(level: 1).count)
     }
 
     override func didReceiveMemoryWarning() {

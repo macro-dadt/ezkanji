@@ -12,7 +12,7 @@
 		<key>GRDB.swift.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<false/>
+			<true/>
 		</dict>
 		<key>GTMOAuth2.xcscheme</key>
 		<dict>
@@ -49,11 +49,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>SQLite.swift.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>SVProgressHUD.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -72,7 +67,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>29646DA3E0A7226F172EE392AD74768F</key>
+		<key>46C8C4213D44F77BEE9EB527B8124AF7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4E439B10012F0EF4F91CD32B116C1A86</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -92,17 +92,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>88F7E6415E552F35F80DE3B39B8DEFA5</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>9556FE3E39065F05D0BD7CF240845E47</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>95C8E74765223657A2BD066CD7818C59</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -117,12 +107,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C7CCB2BF7087AFB5AE303BC3553A3958</key>
+		<key>CB97ECB6E966E11596E8DD25019EE120</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F456BC62930A806D2FDD2F7FF6DDBD9A</key>
+		<key>FC4944A4FC7380F8BF6922BC6D649B2B</key>
 		<dict>
 			<key>primary</key>
 			<true/>

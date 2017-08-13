@@ -19,7 +19,6 @@ target 'KanjiApp' do
     pod 'Google/SignIn'
     pod 'Firebase/Core'
     pod 'Firebase/AdMob'
-    pod 'SQLite.swift', '~> 0.11.3'
     pod 'GRDB.swift'
 end
 
