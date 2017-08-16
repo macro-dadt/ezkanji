@@ -15,7 +15,8 @@ class Course: NSObject {
     var price:NSNumber?
     var screenshots:[String]?
     var desc: String?
-    var courseInformation:AnyObject?
+    var appInformation:AnyObject?
+    //ko thay doi ten bien vi no dung de parse json
     override func setValue(_ value: Any?, forKey key: String) {
         if key == "description"{
             self.desc = value as? String

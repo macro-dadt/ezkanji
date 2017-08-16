@@ -771,11 +771,11 @@ open class PulleyViewController: UIViewController {
     func switchToolbarButton(showCategory: Bool) {
         if showCategory {
             bottomVC.view.alpha = 0
-            bottom2VC.view.alpha = 1
+            bottom2VC.view.alpha = 0
             
         }
         else{
-            bottomVC.view.alpha = 1
+            bottomVC.view.alpha = 0
             bottom2VC.view.alpha = 0
         }
     }

@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class ScreenshotsCell: BaseCell, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
+class ScreenshotsCell:  BaseCell, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate  {
     
     var course:Course?{
         didSet{

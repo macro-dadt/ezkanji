@@ -18,17 +18,23 @@ class FeaturedCoursesController: UICollectionViewController, UICollectionViewDel
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.isNavigationBarHidden = true
+
 //        navigationItem.title = "Featured Apps"
         CourseService.fetchFeaturedCourses{ (featuredCourses) -> () in
             self.featuredCourses = featuredCourses
             self.courseCategories = featuredCourses.courseCategories
             self.collectionView?.reloadData()
         }
+        collectionView?.alwaysBounceVertical = true
         collectionView?.backgroundColor = .white
         collectionView?.register(CategoryCell.self, forCellWithReuseIdentifier: cellId)
         collectionView?.register(LargeCategoryCell.self, forCellWithReuseIdentifier: largeCellId)
         collectionView?.register(Header.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerId)
 
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        navigationController?.isNavigationBarHidden = true
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

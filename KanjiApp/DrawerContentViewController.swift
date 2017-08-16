@@ -25,7 +25,6 @@ class DrawerContentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         DrawerContentViewController.delegate = self
-        
         // Do any additional setup after loading the view.
         arrowImage.layer.cornerRadius = 2.5
         seperatorHeightConstraint.constant = 1.0 / UIScreen.main.scale

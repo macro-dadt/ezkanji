@@ -10,8 +10,15 @@ import UIKit
 
 class MainViewController: UIViewController {
 
+    @IBOutlet weak var mainView: UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
+        let layout = UICollectionViewFlowLayout()
+        let featuredCoursesVC = FeaturedCoursesController(collectionViewLayout: layout)
+        //let featuredCoursesVC = storyboard?.instantiateViewController(withIdentifier: "FeaturedCourses")
+      
+        self.addChildViewController(featuredCoursesVC)
+        mainView.addSubview((featuredCoursesVC.view)!)
 
         // Do any additional setup after loading the view.
     }
