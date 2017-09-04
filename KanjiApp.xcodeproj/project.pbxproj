@@ -12,7 +12,6 @@
 		5C2C698B1F3F5530005C2F66 /* DatabaseHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C698A1F3F5530005C2F66 /* DatabaseHelper.swift */; };
 		5C2C69901F3FE853005C2F66 /* Kanji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C698F1F3FE853005C2F66 /* Kanji.swift */; };
 		5C2C69AE1F402B02005C2F66 /* database.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 5C2C69AD1F402B02005C2F66 /* database.sqlite */; };
-		5C2C69B61F41889E005C2F66 /* WordsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C69B51F41889E005C2F66 /* WordsListViewController.swift */; };
 		5C2C69B81F4188F8005C2F66 /* BottomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C69B71F4188F8005C2F66 /* BottomViewController.swift */; };
 		5C2C69BA1F418907005C2F66 /* Bottom2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C69B91F418907005C2F66 /* Bottom2ViewController.swift */; };
 		5C2C69BC1F418938005C2F66 /* PulleyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C69BB1F418938005C2F66 /* PulleyViewController.swift */; };
@@ -33,6 +32,9 @@
 		5C2C69E81F42EE0A005C2F66 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C69E71F42EE0A005C2F66 /* Header.swift */; };
 		5C2C69EE1F4320C8005C2F66 /* FeaturedCourses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C69ED1F4320C8005C2F66 /* FeaturedCourses.swift */; };
 		5C2C69F01F4324DE005C2F66 /* ScreenshotsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2C69EF1F4324DE005C2F66 /* ScreenshotsCell.swift */; };
+		5C2F38711F5BD677004B0BE4 /* KanjiCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2F386F1F5BD677004B0BE4 /* KanjiCell.swift */; };
+		5C2F38721F5BD677004B0BE4 /* KanjiCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5C2F38701F5BD677004B0BE4 /* KanjiCell.xib */; };
+		5C2F387A1F5BEB1B004B0BE4 /* DetailParentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2F38791F5BEB1B004B0BE4 /* DetailParentViewController.swift */; };
 		5C5F417B1F11E8EE000E4F7C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F417A1F11E8EE000E4F7C /* AppDelegate.swift */; };
 		5C5F41801F11E8EE000E4F7C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C5F417E1F11E8EE000E4F7C /* Main.storyboard */; };
 		5C5F41851F11E8EE000E4F7C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C5F41831F11E8EE000E4F7C /* LaunchScreen.storyboard */; };
@@ -40,6 +42,9 @@
 		5C5F419B1F11E8EE000E4F7C /* KanjiAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F419A1F11E8EE000E4F7C /* KanjiAppUITests.swift */; };
 		5C5F41BA1F1212B4000E4F7C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F41B91F1212B4000E4F7C /* User.swift */; };
 		5C5F41BC1F12264E000E4F7C /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5F41BB1F12264E000E4F7C /* UserService.swift */; };
+		5CFCCD261F493C06008EFFF0 /* KanjiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFCCD251F493C06008EFFF0 /* KanjiService.swift */; };
+		5CFCCD2D1F499482008EFFF0 /* WordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFCCD2C1F499482008EFFF0 /* WordsViewController.swift */; };
+		5CFCCD2F1F499E9D008EFFF0 /* WordDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFCCD2E1F499E9D008EFFF0 /* WordDetailViewController.swift */; };
 		DDF85D8D4436E3787763FB90 /* Pods_KanjiApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FFDEDEEAB5F3C746E92BDCD /* Pods_KanjiApp.framework */; };
 		EF0BE43CC4E5BA33D44C667A /* Pods_KanjiAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E79DC9D189AE0A74A322BEDE /* Pods_KanjiAppUITests.framework */; };
 /* End PBXBuildFile section */
@@ -68,7 +73,6 @@
 		5C2C698A1F3F5530005C2F66 /* DatabaseHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseHelper.swift; sourceTree = "<group>"; };
 		5C2C698F1F3FE853005C2F66 /* Kanji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Kanji.swift; sourceTree = "<group>"; };
 		5C2C69AD1F402B02005C2F66 /* database.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.sqlite; sourceTree = "<group>"; };
-		5C2C69B51F41889E005C2F66 /* WordsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordsListViewController.swift; sourceTree = "<group>"; };
 		5C2C69B71F4188F8005C2F66 /* BottomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomViewController.swift; sourceTree = "<group>"; };
 		5C2C69B91F418907005C2F66 /* Bottom2ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bottom2ViewController.swift; sourceTree = "<group>"; };
 		5C2C69BB1F418938005C2F66 /* PulleyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PulleyViewController.swift; sourceTree = "<group>"; };
@@ -89,6 +93,9 @@
 		5C2C69E71F42EE0A005C2F66 /* Header.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		5C2C69ED1F4320C8005C2F66 /* FeaturedCourses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedCourses.swift; sourceTree = "<group>"; };
 		5C2C69EF1F4324DE005C2F66 /* ScreenshotsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenshotsCell.swift; sourceTree = "<group>"; };
+		5C2F386F1F5BD677004B0BE4 /* KanjiCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KanjiCell.swift; sourceTree = "<group>"; };
+		5C2F38701F5BD677004B0BE4 /* KanjiCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KanjiCell.xib; sourceTree = "<group>"; };
+		5C2F38791F5BEB1B004B0BE4 /* DetailParentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailParentViewController.swift; sourceTree = "<group>"; };
 		5C5F41771F11E8EE000E4F7C /* KanjiApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KanjiApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C5F417A1F11E8EE000E4F7C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5C5F417F1F11E8EE000E4F7C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -102,6 +109,10 @@
 		5C5F419C1F11E8EE000E4F7C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C5F41B91F1212B4000E4F7C /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		5C5F41BB1F12264E000E4F7C /* UserService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
+		5CFCCD251F493C06008EFFF0 /* KanjiService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KanjiService.swift; sourceTree = "<group>"; };
+		5CFCCD2B1F49616A008EFFF0 /* KanjiApp-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KanjiApp-Bridging-Header.h"; sourceTree = "<group>"; };
+		5CFCCD2C1F499482008EFFF0 /* WordsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordsViewController.swift; sourceTree = "<group>"; };
+		5CFCCD2E1F499E9D008EFFF0 /* WordDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordDetailViewController.swift; sourceTree = "<group>"; };
 		777E290574292043E3D30109 /* Pods-KanjiAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KanjiAppUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KanjiAppUITests/Pods-KanjiAppUITests.release.xcconfig"; sourceTree = "<group>"; };
 		83963C0FA12910C359444212 /* Pods-KanjiApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KanjiApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KanjiApp/Pods-KanjiApp.debug.xcconfig"; sourceTree = "<group>"; };
 		9FFDEDEEAB5F3C746E92BDCD /* Pods_KanjiApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KanjiApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -198,8 +209,8 @@
 		5C2C69AF1F409F10005C2F66 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				5CFCCD291F495C2F008EFFF0 /* Words */,
 				5C2C69C71F429E8A005C2F66 /* Menu */,
-				5C2C69B51F41889E005C2F66 /* WordsListViewController.swift */,
 				5C2C69BD1F41896D005C2F66 /* MainViewController.swift */,
 				5C2C69B71F4188F8005C2F66 /* BottomViewController.swift */,
 				5C2C69B91F418907005C2F66 /* Bottom2ViewController.swift */,
@@ -214,6 +225,8 @@
 			isa = PBXGroup;
 			children = (
 				5C5F417E1F11E8EE000E4F7C /* Main.storyboard */,
+				5C2F386F1F5BD677004B0BE4 /* KanjiCell.swift */,
+				5C2F38701F5BD677004B0BE4 /* KanjiCell.xib */,
 			);
 			name = Main;
 			sourceTree = "<group>";
@@ -246,6 +259,7 @@
 		5C5F416E1F11E8EE000E4F7C = {
 			isa = PBXGroup;
 			children = (
+				5CFCCD2B1F49616A008EFFF0 /* KanjiApp-Bridging-Header.h */,
 				5C5F41791F11E8EE000E4F7C /* KanjiApp */,
 				5C5F418E1F11E8EE000E4F7C /* KanjiAppTests */,
 				5C5F41991F11E8EE000E4F7C /* KanjiAppUITests */,
@@ -313,6 +327,7 @@
 			isa = PBXGroup;
 			children = (
 				5C2C69AF1F409F10005C2F66 /* Main */,
+				5C2F38791F5BEB1B004B0BE4 /* DetailParentViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -338,8 +353,18 @@
 			isa = PBXGroup;
 			children = (
 				5C2C698F1F3FE853005C2F66 /* Kanji.swift */,
+				5CFCCD251F493C06008EFFF0 /* KanjiService.swift */,
 			);
 			name = Kanji;
+			sourceTree = "<group>";
+		};
+		5CFCCD291F495C2F008EFFF0 /* Words */ = {
+			isa = PBXGroup;
+			children = (
+				5CFCCD2C1F499482008EFFF0 /* WordsViewController.swift */,
+				5CFCCD2E1F499E9D008EFFF0 /* WordDetailViewController.swift */,
+			);
+			name = Words;
 			sourceTree = "<group>";
 		};
 		E519A7C649706DF6974A4C53 /* Frameworks */ = {
@@ -474,6 +499,7 @@
 			files = (
 				5C2C69AE1F402B02005C2F66 /* database.sqlite in Resources */,
 				5C5F41851F11E8EE000E4F7C /* LaunchScreen.storyboard in Resources */,
+				5C2F38721F5BD677004B0BE4 /* KanjiCell.xib in Resources */,
 				5C2C69C61F41A59D005C2F66 /* Assets.xcassets in Resources */,
 				5C5F41801F11E8EE000E4F7C /* Main.storyboard in Resources */,
 			);
@@ -647,19 +673,23 @@
 				5C2C69C21F418AFA005C2F66 /* PulleyPassthroughScrollView.swift in Sources */,
 				5C5F41BC1F12264E000E4F7C /* UserService.swift in Sources */,
 				5C2C698B1F3F5530005C2F66 /* DatabaseHelper.swift in Sources */,
+				5CFCCD2D1F499482008EFFF0 /* WordsViewController.swift in Sources */,
 				5C2C69E81F42EE0A005C2F66 /* Header.swift in Sources */,
 				5C2C69D61F42BA9E005C2F66 /* Extensions.swift in Sources */,
-				5C2C69B61F41889E005C2F66 /* WordsListViewController.swift in Sources */,
 				5C2C69C01F41898F005C2F66 /* DrawerContentViewController.swift in Sources */,
+				5CFCCD261F493C06008EFFF0 /* KanjiService.swift in Sources */,
 				5C2C69BC1F418938005C2F66 /* PulleyViewController.swift in Sources */,
 				5C2C69D01F42B437005C2F66 /* FeaturedCoursesController.swift in Sources */,
 				5C2C69DC1F42E44E005C2F66 /* Utility.swift in Sources */,
 				5C2C69B81F4188F8005C2F66 /* BottomViewController.swift in Sources */,
 				5C2C69EE1F4320C8005C2F66 /* FeaturedCourses.swift in Sources */,
+				5C2F38711F5BD677004B0BE4 /* KanjiCell.swift in Sources */,
+				5C2F387A1F5BEB1B004B0BE4 /* DetailParentViewController.swift in Sources */,
 				5C5F417B1F11E8EE000E4F7C /* AppDelegate.swift in Sources */,
 				5C5F41BA1F1212B4000E4F7C /* User.swift in Sources */,
 				5C2C69DE1F42E918005C2F66 /* LargeCategoryCell.swift in Sources */,
 				5C2C69CC1F42A15C005C2F66 /* Course.swift in Sources */,
+				5CFCCD2F1F499E9D008EFFF0 /* WordDetailViewController.swift in Sources */,
 				5C2C69E01F42E9D8005C2F66 /* CourseDetailController.swift in Sources */,
 				5C2C69901F3FE853005C2F66 /* Kanji.swift in Sources */,
 				5C2C69CE1F42AAF2005C2F66 /* CourseCategory.swift in Sources */,

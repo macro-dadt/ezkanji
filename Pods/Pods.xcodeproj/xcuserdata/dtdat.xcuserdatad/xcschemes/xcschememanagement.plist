@@ -12,7 +12,7 @@
 		<key>GRDB.swift.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<true/>
+			<false/>
 		</dict>
 		<key>GTMOAuth2.xcscheme</key>
 		<dict>
@@ -54,6 +54,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>SwiftSVG.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SwiftyJSON.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -67,12 +72,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>46C8C4213D44F77BEE9EB527B8124AF7</key>
+		<key>352A99B43EAE931274F840DD00FE2F11</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4E439B10012F0EF4F91CD32B116C1A86</key>
+		<key>52CC5EA91B64B1FE567ECFEC0CBE1A9D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -83,6 +88,11 @@
 			<true/>
 		</dict>
 		<key>681BE6E3D02A43F9BA63777AC435C8FD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>844964BE047AD4ABE7C96B4997A7F753</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -107,12 +117,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>CB97ECB6E966E11596E8DD25019EE120</key>
+		<key>C28B0DC150BB6358664095564EF0E891</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>FC4944A4FC7380F8BF6922BC6D649B2B</key>
+		<key>F7212AB99D04304C52D1F9A8A9F33488</key>
 		<dict>
 			<key>primary</key>
 			<true/>

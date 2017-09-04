@@ -46,6 +46,69 @@ extension TableMapping {
 
 extension TableMapping {
     
+    // MARK: Key Requests
+    
+    static func filter<Sequence: Swift.Sequence>(_ db: Database, keys: Sequence) throws -> QueryInterfaceRequest<Self> where Sequence.Iterator.Element: DatabaseValueConvertible {
+        let primaryKey = try db.primaryKey(databaseTableName)
+        let columns = primaryKey?.columns.map { Column($0) } ?? [Column.rowID]
+        GRDBPrecondition(columns.count == 1, "table \(databaseTableName) has multiple columns in its primary key")
+        let column = columns[0]
+        
+        let keys = Array(keys)
+        switch keys.count {
+        case 0:
+            return none()
+        case 1:
+            return filter(column == keys[0])
+        default:
+            return filter(keys.contains(column))
+        }
+    }
+    
+    // Raises a fatal error if there is no unique index on the columns (unless
+    // fatalErrorOnMissingUniqueIndex is false, for testability).
+    //
+    // TODO: think about
+    // - allowing non unique keys in Type.fetchOne(db, key: ...) ???
+    // - allowing non unique keys in Type.fetchAll/Cursor(db, keys: ...)
+    // - forbidding Player.deleteOne(db, key: ["email": nil]) since this may delete several rows (case of a nullable unique key)
+    static func filter(_ db: Database, keys: [[String: DatabaseValueConvertible?]], fatalErrorOnMissingUniqueIndex: Bool = true) throws -> QueryInterfaceRequest<Self> {
+        // SELECT * FROM table WHERE ((a=? AND b=?) OR (c=? AND d=?) OR ...)
+        let keyPredicates: [SQLExpression] = try keys.map { key in
+            // Prevent filter(db, keys: [[:]])
+            GRDBPrecondition(!key.isEmpty, "Invalid empty key dictionary")
+
+            // Prevent filter(db, keys: [["foo": 1, "bar": 2]]) where
+            // ("foo", "bar") is not a unique key (primary key or columns of a
+            // unique index)
+            guard let orderedColumns = try db.columnsForUniqueKey(key.keys, in: databaseTableName) else {
+                let message = "table \(databaseTableName) has no unique index on column(s) \(key.keys.sorted().joined(separator: ", "))"
+                if fatalErrorOnMissingUniqueIndex {
+                    fatalError(message)
+                } else {
+                    throw DatabaseError(resultCode: .SQLITE_MISUSE, message: message)
+                }
+            }
+            
+            let lowercaseOrderedColumns = orderedColumns.map { $0.lowercased() }
+            let columnPredicates: [SQLExpression] = key
+                // Sort key columns in the same order as the unique index
+                .sorted { (kv1, kv2) in lowercaseOrderedColumns.index(of: kv1.0.lowercased())! < lowercaseOrderedColumns.index(of: kv2.0.lowercased())! }
+                .map { (column, value) in Column(column) == value }
+            return SQLBinaryOperator.and.join(columnPredicates)! // not nil because columnPredicates is not empty
+        }
+        
+        guard let predicate = SQLBinaryOperator.or.join(keyPredicates) else {
+            // No key
+            return none()
+        }
+        
+        return filter(predicate)
+    }
+}
+
+extension TableMapping {
+    
     // MARK: Deleting All
     
     /// Deletes all records; returns the number of deleted rows.
@@ -74,11 +137,12 @@ extension TableMapping {
     /// - returns: The number of deleted rows
     @discardableResult
     public static func deleteAll<Sequence: Swift.Sequence>(_ db: Database, keys: Sequence) throws -> Int where Sequence.Iterator.Element: DatabaseValueConvertible {
-        guard let statement = try makeDeleteByPrimaryKeyStatement(db, keys: keys) else {
+        let keys = Array(keys)
+        if keys.isEmpty {
+            // Avoid hitting the database
             return 0
         }
-        try statement.execute()
-        return db.changesCount
+        return try filter(db, keys: keys).deleteAll(db)
     }
     
     /// Delete a record, identified by its primary key; returns whether a
@@ -93,43 +157,10 @@ extension TableMapping {
     @discardableResult
     public static func deleteOne<PrimaryKeyType: DatabaseValueConvertible>(_ db: Database, key: PrimaryKeyType?) throws -> Bool {
         guard let key = key else {
+            // Avoid hitting the database
             return false
         }
         return try deleteAll(db, keys: [key]) > 0
-    }
-    
-    // Returns "DELETE FROM table WHERE id IN (?,?,?)"
-    //
-    // Returns nil if keys is empty.
-    private static func makeDeleteByPrimaryKeyStatement<Sequence: Swift.Sequence>(_ db: Database, keys: Sequence) throws -> UpdateStatement? where Sequence.Iterator.Element: DatabaseValueConvertible {
-        // Fail early if database table does not exist.
-        let databaseTableName = self.databaseTableName
-        let primaryKey = try db.primaryKey(databaseTableName)
-        
-        // Fail early if database table has not one column in its primary key
-        let columns = primaryKey?.columns ?? []
-        GRDBPrecondition(columns.count <= 1, "requires single column primary key in table: \(databaseTableName)")
-        let column = columns.first ?? Column.rowID.name
-        
-        let keys = Array(keys)
-        switch keys.count {
-        case 0:
-            // Avoid performing useless DELETE
-            return nil
-        case 1:
-            // DELETE FROM table WHERE id = ?
-            let sql = "DELETE FROM \(databaseTableName.quotedDatabaseIdentifier) WHERE \(column.quotedDatabaseIdentifier) = ?"
-            let statement = try db.makeUpdateStatement(sql)
-            statement.arguments = StatementArguments(keys)
-            return statement
-        case let count:
-            // DELETE FROM table WHERE id IN (?,?,?)
-            let keysSQL = databaseQuestionMarks(count: count)
-            let sql = "DELETE FROM \(databaseTableName.quotedDatabaseIdentifier) WHERE \(column.quotedDatabaseIdentifier) IN (\(keysSQL))"
-            let statement = try db.makeUpdateStatement(sql)
-            statement.arguments = StatementArguments(keys)
-            return statement
-        }
     }
 }
 
@@ -148,11 +179,11 @@ extension TableMapping {
     /// - returns: The number of deleted rows
     @discardableResult
     public static func deleteAll(_ db: Database, keys: [[String: DatabaseValueConvertible?]]) throws -> Int {
-        guard let statement = try makeDeleteByKeyStatement(db, keys: keys) else {
+        if keys.isEmpty {
+            // Avoid hitting the database
             return 0
         }
-        try statement.execute()
-        return db.changesCount
+        return try filter(db, keys: keys).deleteAll(db)
     }
     
     /// Delete a record, identified by a unique key (the primary key or any key
@@ -167,45 +198,6 @@ extension TableMapping {
     @discardableResult
     public static func deleteOne(_ db: Database, key: [String: DatabaseValueConvertible?]) throws -> Bool {
         return try deleteAll(db, keys: [key]) > 0
-    }
-    
-    // Returns "DELETE FROM table WHERE (a = ? AND b = ?) OR (a = ? AND b = ?) ...
-    //
-    // Returns nil if keys is empty.
-    //
-    // If there is no unique index on the columns, the method raises a fatal
-    // (unless fatalErrorOnMissingUniqueIndex is false, for testability).
-    static func makeDeleteByKeyStatement(_ db: Database, keys: [[String: DatabaseValueConvertible?]], fatalErrorOnMissingUniqueIndex: Bool = true) throws -> UpdateStatement? {
-        // Avoid performing useless SELECT
-        guard keys.count > 0 else {
-            return nil
-        }
-        
-        let databaseTableName = self.databaseTableName
-        var arguments: [DatabaseValueConvertible?] = []
-        var whereClauses: [String] = []
-        for dictionary in keys {
-            GRDBPrecondition(dictionary.count > 0, "Invalid empty key dictionary")
-            let columns = Array(dictionary.keys)
-            guard let orderedColumns = try db.columnsForUniqueKey(columns, in: databaseTableName) else {
-                let error = DatabaseError(resultCode: .SQLITE_MISUSE, message: "table \(databaseTableName) has no unique index on column(s) \(columns.sorted().joined(separator: ", "))")
-                if fatalErrorOnMissingUniqueIndex {
-                    fatalError(error.description)
-                } else {
-                    throw error
-                }
-            }
-            arguments.append(contentsOf: orderedColumns.map { orderedColumn in
-                dictionary.first { (column, value) in column.lowercased() == orderedColumn.lowercased() }!.value
-            })
-            whereClauses.append("(" + (orderedColumns.map { "\($0.quotedDatabaseIdentifier) = ?" } as [String]).joined(separator: " AND ") + ")")
-        }
-        
-        let whereClause = whereClauses.joined(separator: " OR ")
-        let sql = "DELETE FROM \(databaseTableName.quotedDatabaseIdentifier) WHERE \(whereClause)"
-        let statement = try db.makeUpdateStatement(sql)
-        statement.arguments = StatementArguments(arguments)
-        return statement
     }
 }
 

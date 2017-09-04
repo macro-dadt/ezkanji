@@ -9,26 +9,35 @@
 import UIKit
 
 class MainViewController: UIViewController {
-
     @IBOutlet weak var mainView: UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
+        removeTabbarItemsText(tabBar: (self.tabBarController?.tabBar)!)
         let layout = UICollectionViewFlowLayout()
         let featuredCoursesVC = FeaturedCoursesController(collectionViewLayout: layout)
         //let featuredCoursesVC = storyboard?.instantiateViewController(withIdentifier: "FeaturedCourses")
-      
+      featuredCoursesVC.view.frame = mainView.frame
+        featuredCoursesVC.view.frame.origin.y = 0
         self.addChildViewController(featuredCoursesVC)
         mainView.addSubview((featuredCoursesVC.view)!)
-
+        KanjiService.getKanjis(kanji: "亜", callback: {klist in
+            for kanji in klist {
+            print("kanji",kanji.kanji)
+            }
+        })
+        
+        //setup searchbar
+        // Setup the Search Controller
+    
         // Do any additional setup after loading the view.
+    }
+    override func viewWillAppear(_ animated: Bool) {
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-
     /*
     // MARK: - Navigation
 
@@ -40,3 +49,4 @@ class MainViewController: UIViewController {
     */
 
 }
+

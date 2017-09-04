@@ -13,8 +13,8 @@ class Kanji: NSObject{
     var kanji = ""
     var mean = ""
     var level = 0
-    var on = ""
-    var kun = ""
+    var onyomi = ""
+    var kunyomi = ""
     var svgImg = ""
     var detail = ""
     var comp = ""
@@ -24,6 +24,6 @@ class Kanji: NSObject{
     var didRemember = false
     
     var strokeCount = 0
-    var image = ""
+    var story_image = ""
     var story = ""
 }

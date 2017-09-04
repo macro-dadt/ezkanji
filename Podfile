@@ -20,6 +20,7 @@ target 'KanjiApp' do
     pod 'Firebase/Core'
     pod 'Firebase/AdMob'
     pod 'GRDB.swift'
+    pod 'SwiftSVG', '~> 2.0'
 end
 
 target 'KanjiAppTests' do

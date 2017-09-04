@@ -294,10 +294,18 @@ public final class Database {
     var lastErrorMessage: String? { return String(cString: sqlite3_errmsg(sqliteConnection)) }
     
     /// True if the database connection is currently in a transaction.
-    public var isInsideTransaction: Bool { return isInsideExplicitTransaction || !savepointStack.isEmpty }
-    
-    /// Set by BEGIN/ROLLBACK/COMMIT transaction statements.
-    fileprivate var isInsideExplicitTransaction: Bool = false
+    public var isInsideTransaction: Bool {
+        // https://sqlite.org/c3ref/get_autocommit.html
+        //
+        // > The sqlite3_get_autocommit() interface returns non-zero or zero if
+        // > the given database connection is or is not in autocommit mode,
+        // > respectively.
+        //
+        // > Autocommit mode is on by default. Autocommit mode is disabled by a
+        // > BEGIN statement. Autocommit mode is re-enabled by a COMMIT
+        // > or ROLLBACK.
+        return sqlite3_get_autocommit(sqliteConnection) == 0
+    }
     
     /// Set by SAVEPOINT/COMMIT/ROLLBACK/RELEASE savepoint statements.
     fileprivate var savepointStack = SavepointStack()
@@ -471,6 +479,7 @@ public final class Database {
                 guard let stmt = stmt else { return SQLITE_OK }
                 guard let expandedSQLCString = sqlite3_expanded_sql(OpaquePointer(stmt)) else { return SQLITE_OK }
                 let sql = String(cString: expandedSQLCString)
+                sqlite3_free(expandedSQLCString)
                 let database = unsafeBitCast(dbPointer, to: Database.self)
                 database.configuration.trace!(sql)
                 return SQLITE_OK
@@ -487,6 +496,7 @@ public final class Database {
                     guard let stmt = stmt else { return SQLITE_OK }
                     guard let expandedSQLCString = sqlite3_expanded_sql(OpaquePointer(stmt)) else { return SQLITE_OK }
                     let sql = String(cString: expandedSQLCString)
+                    sqlite3_free(expandedSQLCString)
                     let database = unsafeBitCast(dbPointer, to: Database.self)
                     database.configuration.trace!(sql)
                     return SQLITE_OK
@@ -683,7 +693,22 @@ extension Database {
     /// - returns: A SelectStatement.
     /// - throws: A DatabaseError whenever SQLite could not parse the sql query.
     public func makeSelectStatement(_ sql: String) throws -> SelectStatement {
-        return try SelectStatement(database: self, sql: sql)
+        return try makeSelectStatement(sql, prepFlags: 0)
+    }
+    
+    /// Returns a new prepared statement that can be reused.
+    ///
+    ///     let statement = try db.makeSelectStatement("SELECT COUNT(*) FROM persons WHERE age > ?", prepFlags: 0)
+    ///     let moreThanTwentyCount = try Int.fetchOne(statement, arguments: [20])!
+    ///     let moreThanThirtyCount = try Int.fetchOne(statement, arguments: [30])!
+    ///
+    /// - parameter sql: An SQL query.
+    /// - parameter prepFlags: Flags for sqlite3_prepare_v3 (available from
+    ///   SQLite 3.20.0, see http://www.sqlite.org/c3ref/prepare.html)
+    /// - returns: A SelectStatement.
+    /// - throws: A DatabaseError whenever SQLite could not parse the sql query.
+    func makeSelectStatement(_ sql: String, prepFlags: Int32) throws -> SelectStatement {
+        return try SelectStatement(database: self, sql: sql, prepFlags: prepFlags)
     }
     
     /// Returns a prepared statement that can be reused.
@@ -720,7 +745,22 @@ extension Database {
     /// - returns: An UpdateStatement.
     /// - throws: A DatabaseError whenever SQLite could not parse the sql query.
     public func makeUpdateStatement(_ sql: String) throws -> UpdateStatement {
-        return try UpdateStatement(database: self, sql: sql)
+        return try makeUpdateStatement(sql, prepFlags: 0)
+    }
+    
+    /// Returns a new prepared statement that can be reused.
+    ///
+    ///     let statement = try db.makeUpdateStatement("INSERT INTO persons (name) VALUES (?)", prepFlags: 0)
+    ///     try statement.execute(arguments: ["Arthur"])
+    ///     try statement.execute(arguments: ["Barbara"])
+    ///
+    /// - parameter sql: An SQL query.
+    /// - parameter prepFlags: Flags for sqlite3_prepare_v3 (available from
+    ///   SQLite 3.20.0, see http://www.sqlite.org/c3ref/prepare.html)
+    /// - returns: An UpdateStatement.
+    /// - throws: A DatabaseError whenever SQLite could not parse the sql query.
+    func makeUpdateStatement(_ sql: String, prepFlags: Int32) throws -> UpdateStatement {
+        return try UpdateStatement(database: self, sql: sql, prepFlags: prepFlags)
     }
     
     /// Returns a prepared statement that can be reused.
@@ -1200,7 +1240,7 @@ extension Database {
     /// If there exists a unique key on columns, return the columns
     /// ordered as the matching index (or primay key). Case of returned columns
     /// is not guaranteed.
-    func columnsForUniqueKey(_ columns: [String], in tableName: String) throws -> [String]? {
+    func columnsForUniqueKey<T: Sequence>(_ columns: T, in tableName: String) throws -> [String]? where T.Iterator.Element == String {
         let primaryKey = try self.primaryKey(tableName) // first, so that we fail early and consistently should the table not exist
         let lowercasedColumns = Set(columns.map { $0.lowercased() })
         if let index = try indexes(on: tableName).first(where: { index in index.isUnique && Set(index.columns.map { $0.lowercased() }) == lowercasedColumns }) {
@@ -1629,7 +1669,7 @@ extension Database {
         
         if needsRollback {
             do {
-                try rollback(underlyingError: firstError)
+                try rollback()
             } catch {
                 if firstError == nil {
                     firstError = error
@@ -1706,7 +1746,7 @@ extension Database {
         if needsRollback {
             do {
                 if topLevelSavepoint {
-                    try rollback(underlyingError: firstError)
+                    try rollback()
                 } else {
                     // Rollback, and release the savepoint.
                     // Rollback alone is not enough to clear the savepoint from
@@ -1737,36 +1777,48 @@ extension Database {
         }
     }
     
-    private func rollback(underlyingError: Error?) throws {
-        do {
+    private func rollback() throws {
+        // The SQLite documentation contains two related but distinct techniques
+        // to handle rollbacks and errors:
+        //
+        // https://www.sqlite.org/lang_transaction.html#immediate
+        //
+        // > Response To Errors Within A Transaction
+        // >
+        // > If certain kinds of errors occur within a transaction, the
+        // > transaction may or may not be rolled back automatically.
+        // > The errors that can cause an automatic rollback include:
+        // >
+        // > - SQLITE_FULL: database or disk full
+        // > - SQLITE_IOERR: disk I/O error
+        // > - SQLITE_BUSY: database in use by another process
+        // > - SQLITE_NOMEM: out or memory
+        // >
+        // > [...] It is recommended that applications respond to the
+        // > errors listed above by explicitly issuing a ROLLBACK
+        // > command. If the transaction has already been rolled back
+        // > automatically by the error response, then the ROLLBACK
+        // > command will fail with an error, but no harm is caused
+        // > by this.
+        //
+        // https://sqlite.org/c3ref/get_autocommit.html
+        //
+        // > The sqlite3_get_autocommit() interface returns non-zero or zero if
+        // > the given database connection is or is not in autocommit mode,
+        // > respectively.
+        // > 
+        // > [...] If certain kinds of errors occur on a statement within a
+        // > multi-statement transaction (errors including SQLITE_FULL,
+        // > SQLITE_IOERR, SQLITE_NOMEM, SQLITE_BUSY, and SQLITE_INTERRUPT) then
+        // > the transaction might be rolled back automatically. The only way to
+        // > find out whether SQLite automatically rolled back the transaction
+        // > after an error is to use this function.
+        //
+        // The second technique is more robust, because we don't have to guess
+        // which rollback errors should be ignored, and which rollback errors
+        // should be exposed to the library user.
+        if sqlite3_get_autocommit(sqliteConnection) == 0 {
             try execute("ROLLBACK TRANSACTION")
-        } catch {
-            // https://www.sqlite.org/lang_transaction.html#immediate
-            //
-            // > Response To Errors Within A Transaction
-            // >
-            // > If certain kinds of errors occur within a transaction, the
-            // > transaction may or may not be rolled back automatically.
-            // > The errors that can cause an automatic rollback include:
-            // >
-            // > - SQLITE_FULL: database or disk full
-            // > - SQLITE_IOERR: disk I/O error
-            // > - SQLITE_BUSY: database in use by another process
-            // > - SQLITE_NOMEM: out or memory
-            // >
-            // > [...] It is recommended that applications respond to the
-            // > errors listed above by explicitly issuing a ROLLBACK
-            // > command. If the transaction has already been rolled back
-            // > automatically by the error response, then the ROLLBACK
-            // > command will fail with an error, but no harm is caused
-            // > by this.
-            //
-            // TODO: test that isInsideTransaction, savepointStack, transaction
-            // observers, etc. are in good shape when such an implicit rollback
-            // happens.
-            guard let underlyingError = underlyingError as? DatabaseError, [.SQLITE_FULL, .SQLITE_IOERR, .SQLITE_BUSY, .SQLITE_NOMEM].contains(underlyingError.resultCode) else {
-                throw error
-            }
         }
     }
     
@@ -1884,9 +1936,11 @@ extension Database {
     }
     
     func updateStatementWillExecute(_ statement: UpdateStatement) {
+        // Grab the transaction observers that are interested in the actions
+        // performed by the statement.
         let databaseEventKinds = statement.databaseEventKinds
         activeTransactionObservers = transactionObservers.filter { observer in
-            return databaseEventKinds.index(where: observer.observes) != nil
+            return databaseEventKinds.contains(where: observer.observes)
         }
     }
     
@@ -1947,7 +2001,7 @@ extension Database {
             case .transaction(action: let action):
                 switch action {
                 case .begin:
-                    isInsideExplicitTransaction = true
+                    break
                 case .commit:
                     if case .pending = self.transactionHookState {
                         // A COMMIT statement has ended a deferred transaction
@@ -1997,7 +2051,7 @@ extension Database {
         }
     }
     
-    /// Transaction hook
+    /// See sqlite3_commit_hook
     func willCommit() throws {
         let eventsBuffer = savepointStack.eventsBuffer
         savepointStack.clear()
@@ -2013,12 +2067,10 @@ extension Database {
     }
     
 #if SQLITE_ENABLE_PREUPDATE_HOOK
-    /// Transaction hook
+    /// See sqlite3_preupdate_hook
     private func willChange(with event: DatabasePreUpdateEvent) {
         if savepointStack.isEmpty {
-            // Don't notify all transactionObservers about the database event.
-            // Only notify those that are interested in the event, and have been
-            // isolated in updateStatementWillExecute().
+            // Notify all interested transactionObservers.
             for observer in activeTransactionObservers {
                 observer.databaseWillChange(with: event)
             }
@@ -2029,12 +2081,10 @@ extension Database {
     }
 #endif
     
-    /// Transaction hook
+    /// See sqlite3_update_hook
     private func didChange(with event: DatabaseEvent) {
         if savepointStack.isEmpty {
-            // Don't notify all transactionObservers about the database event.
-            // Only notify those that are interested in the event, and have been
-            // isolated in updateStatementWillExecute().
+            // Notify all interested transactionObservers.
             for observer in activeTransactionObservers {
                 observer.databaseDidChange(with: event)
             }
@@ -2044,9 +2094,7 @@ extension Database {
         }
     }
     
-    /// Transaction hook
     private func didCommit() {
-        isInsideExplicitTransaction = false
         savepointStack.clear()
         
         for observer in transactionObservers {
@@ -2055,9 +2103,7 @@ extension Database {
         cleanupTransactionObservers()
     }
     
-    /// Transaction hook
     private func didRollback(notifyTransactionObservers: Bool) {
-        isInsideExplicitTransaction = false
         savepointStack.clear()
         
         if notifyTransactionObservers {

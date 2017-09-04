@@ -29,3 +29,23 @@ extension UIView{
     }
     
 }
+extension UIViewController {
+    func removeTabbarItemsText(tabBar: UITabBar) {
+        if let items = tabBar.items {
+            for item in items {
+                item.title = ""
+                item.imageInsets = UIEdgeInsetsMake(6, 0, -6, 0);
+            }
+        }
+    }
+    func showNextViewController(story storyboard: String, id: String, obj: AnyObject?) {
+        
+        let detailStoryboard = UIStoryboard(name: storyboard, bundle: nil)
+        let nextViewController = detailStoryboard.instantiateViewController(withIdentifier: id) as! DetailParentViewController
+        nextViewController.data = obj
+        navigationController?.pushViewController(nextViewController, animated: true)
+    }
+    
+    
+}
+

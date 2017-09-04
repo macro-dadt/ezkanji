@@ -1,20 +1,25 @@
 //
-//  WordsListViewController.swift
+//  WordDetailViewController.swift
 //  KanjiApp
 //
-//  Created by DT Dat on 2017/08/14.
+//  Created by DT Dat on 2017/08/20.
 //  Copyright © 2017 DT Dat. All rights reserved.
 //
 
 import UIKit
 
-class WordsListViewController: UIViewController {
+class WordDetailViewController:DetailParentViewController {
+    
+    @IBOutlet weak var scrollView: UIScrollView!
+    
+    var kanji:Kanji!
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
+        scrollView.delegate = self
+        kanji = data as! Kanji
+}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -31,5 +36,8 @@ class WordsListViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+
+}
+extension DetailParentViewController: UIScrollViewDelegate{
 
 }
