@@ -50,7 +50,9 @@ class KanjiService: NSObject{
                 for row in try Row.fetchAll(db,"select * from kanji where kanji like '\(kanji)'"
                     + " OR mean like '\(kanji)'"
                     + " OR kunyomi like '%\(kanji)%'"
-                    + " OR onyomi like '%\(kanji)%you'"){
+                    + " OR onyomi like '%\(kanji)%'"
+                    + " OR level = '\(kanji)'"
+                     + " AND story IS NOT NULL"){
                     let kanji = Kanji()
                     kanji.kanji = (row.value(named: "kanji") ?? "") as String
                     kanji.mean = (row.value(named: "mean") ?? "") as String
