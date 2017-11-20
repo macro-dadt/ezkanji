@@ -28,8 +28,11 @@ class WordDetailViewController:DetailParentViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+            print("kanji1","start")
         scrollView.delegate = self
         kanji = data as! Kanji
+      
+        print("kanji1",kanji.kanji)
         setUpWord()
 
 

@@ -12,6 +12,7 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    let blueColor = UIColor(red: 36.0 / 255.0, green: 38.0 / 255.0, blue: 176.0 / 255.0, alpha: 1.0)
     var window: UIWindow?
 
 

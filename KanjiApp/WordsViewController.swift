@@ -59,6 +59,7 @@ class WordsViewController: UITableViewController{
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         searchBar.resignFirstResponder()
+        print("kanji2",kanjis[indexPath.row].kanji)
         showNextViewController(story: "Main", id: "WordDetail", obj: kanjis[indexPath.row])
     }
 }
