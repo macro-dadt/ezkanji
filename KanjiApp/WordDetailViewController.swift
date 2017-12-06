@@ -49,7 +49,8 @@ class WordDetailViewController:DetailParentViewController {
         do {
             let attrStr = try NSAttributedString(
                 data: kanji.story.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
-                options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
+                options: [.documentType: NSAttributedString.DocumentType.html,
+                          .characterEncoding: String.Encoding.utf8.rawValue],
                 documentAttributes: nil)
             storyTextView.attributedText = attrStr
         } catch let error {

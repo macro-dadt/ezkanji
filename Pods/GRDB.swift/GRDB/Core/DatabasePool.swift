@@ -1,17 +1,34 @@
 import Foundation
-
+#if SWIFT_PACKAGE
+    import CSQLite
+#elseif !GRDBCUSTOMSQLITE && !GRDBCIPHER
+    import SQLite3
+#endif
 #if os(iOS)
     import UIKit
 #endif
 
-#if SWIFT_PACKAGE
-    import CSQLite
-#endif
-
 /// A DatabasePool grants concurrent accesses to an SQLite database.
 public final class DatabasePool {
+    private let writer: SerializedDatabase
+    private var readerConfig: Configuration
+    private var readerPool: Pool<SerializedDatabase>!
     
-    // MARK: - Initializers
+    private var functions = Set<DatabaseFunction>()
+    private var collations = Set<DatabaseCollation>()
+    
+    #if os(iOS)
+    private weak var application: UIApplication?
+    #endif
+    
+    // MARK: - Database Information
+    
+    /// The path to the database.
+    public var path: String {
+        return writer.path
+    }
+    
+    // MARK: - Initializer
     
     /// Opens the SQLite database at path *path*.
     ///
@@ -91,18 +108,12 @@ public final class DatabasePool {
         NotificationCenter.default.removeObserver(self)
     }
     #endif
-    
-    
-    // MARK: - Configuration
-    
-    /// The path to the database.
-    public var path: String {
-        return writer.path
-    }
-    
-    
-    // MARK: - WAL Management
-    
+}
+
+extension DatabasePool {
+
+    // MARK: - WAL Checkpoints
+
     /// Runs a WAL checkpoint
     ///
     /// See https://www.sqlite.org/wal.html and
@@ -121,10 +132,12 @@ public final class DatabasePool {
             }
         }
     }
-    
-    
+}
+
+extension DatabasePool {
+
     // MARK: - Memory management
-    
+
     /// Free as much memory as possible.
     ///
     /// This method blocks the current thread until all database accesses are completed.
@@ -155,8 +168,6 @@ public final class DatabasePool {
         center.addObserver(self, selector: #selector(DatabasePool.applicationDidEnterBackground(_:)), name: .UIApplicationDidEnterBackground, object: nil)
     }
     
-    private var application: UIApplication!
-    
     @objc private func applicationDidEnterBackground(_ notification: NSNotification) {
         guard let application = application else {
             return
@@ -183,24 +194,12 @@ public final class DatabasePool {
         }
     }
     #endif
-    
-    
-    // MARK: - Not public
-    
-    fileprivate let writer: SerializedDatabase
-    fileprivate var readerConfig: Configuration
-    fileprivate var readerPool: Pool<SerializedDatabase>! = nil // var and nil-initialized so that we can use `self` when creating readerPool in DatabasePool.init()
-    
-    fileprivate var functions = Set<DatabaseFunction>()
-    fileprivate var collations = Set<DatabaseCollation>()
 }
-
-
-// =========================================================================
-// MARK: - Encryption
 
 #if SQLITE_HAS_CODEC
     extension DatabasePool {
+
+        // MARK: - Encryption
         
         /// Changes the passphrase of an encrypted database
         public func change(passphrase: String) throws {
@@ -212,19 +211,15 @@ public final class DatabasePool {
     }
 #endif
 
-
-// =========================================================================
-// MARK: - DatabaseReader
-
 extension DatabasePool : DatabaseReader {
     
-    // MARK: - Read From Database
-    
+    // MARK: - Reading from Database
+
     /// Synchronously executes a read-only block in a protected dispatch queue,
     /// and returns its result. The block is wrapped in a deferred transaction.
     ///
-    ///     let persons = try dbPool.read { db in
-    ///         try Person.fetchAll(...)
+    ///     let players = try dbPool.read { db in
+    ///         try Player.fetchAll(...)
     ///     }
     ///
     /// The block is completely isolated. Eventual concurrent database updates
@@ -355,7 +350,6 @@ extension DatabasePool : DatabaseReader {
         return readers.first { $0.onValidQueue }
     }
     
-    
     // MARK: - Functions
     
     /// Add or redefine an SQL function.
@@ -387,7 +381,6 @@ extension DatabasePool : DatabaseReader {
         }
     }
     
-    
     // MARK: - Collations
     
     /// Add or redefine a collation.
@@ -416,10 +409,6 @@ extension DatabasePool : DatabaseReader {
         }
     }
 }
-
-
-// =========================================================================
-// MARK: - DatabaseWriter
 
 extension DatabasePool : DatabaseWriter {
     
@@ -510,7 +499,6 @@ extension DatabasePool : DatabaseWriter {
         return try writer.reentrantSync(block)
     }
     
-    
     // MARK: - Reading from Database
     
     /// Asynchronously executes a read-only block in a protected dispatch queue,
@@ -523,12 +511,12 @@ extension DatabasePool : DatabaseWriter {
     /// database updates are *not visible* inside the block.
     ///
     ///     try dbPool.write { db in
-    ///         try db.execute("DELETE FROM persons")
+    ///         try db.execute("DELETE FROM players")
     ///         try dbPool.readFromCurrentState { db in
     ///             // Guaranteed to be zero
-    ///             try Int.fetchOne(db, "SELECT COUNT(*) FROM persons")!
+    ///             try Int.fetchOne(db, "SELECT COUNT(*) FROM players")!
     ///         }
-    ///         try db.execute("INSERT INTO persons ...")
+    ///         try db.execute("INSERT INTO players ...")
     ///     }
     ///
     /// This method blocks the current thread until the isolation guarantee has

@@ -27,7 +27,7 @@ class JlptVC: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    func showDatePicker() {
+    @objc func showDatePicker() {
         
         if effectView == nil {
             effectView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
@@ -47,7 +47,7 @@ class JlptVC: UIViewController {
             
         }
     }
-    func pushDoneButton() {
+    @objc func pushDoneButton() {
 //        let datePicker = effectView!.contentView.subviews[0] as! UIDatePicker
 //        var dateStr = datePicker.date.description
 //        dateStr.replaceSubrange(dateStr.characters.index(dateStr.startIndex, offsetBy: 10)...dateStr.characters.index(dateStr.startIndex, offsetBy: 24), with: "")
@@ -60,7 +60,7 @@ class JlptVC: UIViewController {
 //        effectView = nil
     }
     
-    func makePickerView() {
+    @objc func makePickerView() {
             // ピッカーを表示
             let storyboard = UIStoryboard(name: "CustomView", bundle: nil)
             let pickerViewController = storyboard.instantiateViewController(withIdentifier: "Picker") as? PickerViewController

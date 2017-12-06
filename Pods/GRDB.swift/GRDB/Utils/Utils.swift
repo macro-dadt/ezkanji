@@ -1,9 +1,5 @@
 import Foundation
 
-#if SWIFT_PACKAGE
-    import CSQLite
-#endif
-
 // MARK: - Public
 
 extension String {
@@ -48,8 +44,6 @@ func GRDBPrecondition(_ condition: @autoclosure() -> Bool, _ message: @autoclosu
     /// Custom precondition function which aims at solving
     /// https://bugs.swift.org/browse/SR-905 and
     /// https://github.com/groue/GRDB.swift/issues/37
-    ///
-    /// TODO: remove this function when https://bugs.swift.org/browse/SR-905 is solved.
     if !condition() {
         fatalError(message, file: file, line: line)
     }
@@ -69,21 +63,3 @@ extension Array {
     }
 }
 
-extension Dictionary {
-    
-    /// Create a dictionary with the keys and values in the given sequence.
-    init<Sequence: Swift.Sequence>(keyValueSequence: Sequence) where Sequence.Iterator.Element == (Key, Value) {
-        self.init(minimumCapacity: keyValueSequence.underestimatedCount)
-        for (key, value) in keyValueSequence {
-            self[key] = value
-        }
-    }
-    
-    /// Create a dictionary from keys and a value builder.
-    init<Sequence: Swift.Sequence>(keys: Sequence, value: (Key) -> Value) where Sequence.Iterator.Element == Key {
-        self.init(minimumCapacity: keys.underestimatedCount)
-        for key in keys {
-            self[key] = value(key)
-        }
-    }
-}

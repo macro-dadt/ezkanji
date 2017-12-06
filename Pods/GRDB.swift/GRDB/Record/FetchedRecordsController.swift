@@ -85,7 +85,7 @@ public final class FetchedRecordsController<Record: RowConvertible> {
         if let isSameRecord = isSameRecord {
             itemsAreIdenticalFactory = { _ in { isSameRecord($0.record, $1.record) } }
         } else {
-            itemsAreIdenticalFactory = { _ in { _ in false } }
+            itemsAreIdenticalFactory = { _ in { _,_ in false } }
         }
         
         try self.init(
@@ -95,7 +95,7 @@ public final class FetchedRecordsController<Record: RowConvertible> {
             itemsAreIdenticalFactory: itemsAreIdenticalFactory)
     }
     
-    fileprivate init<Request>(
+    private init<Request>(
         _ databaseWriter: DatabaseWriter,
         request: Request,
         queue: DispatchQueue,
@@ -211,11 +211,33 @@ public final class FetchedRecordsController<Record: RowConvertible> {
         onChange: ((FetchedRecordsController<Record>, Record, FetchedRecordChange) -> ())? = nil,
         didChange: ((FetchedRecordsController<Record>) -> ())? = nil)
     {
+        // I hate you SE-0110.
+        let wrappedWillChange: ((FetchedRecordsController<Record>, Void) -> ())?
+        if let willChange = willChange {
+            wrappedWillChange = { (controller, _) in willChange(controller) }
+        } else {
+            wrappedWillChange = nil
+        }
+        
+        let wrappedDidChange: ((FetchedRecordsController<Record>, Void) -> ())?
+        if let didChange = didChange {
+            wrappedDidChange = { (controller, _) in didChange(controller) }
+        } else {
+            wrappedDidChange = nil
+        }
+        
         trackChanges(
             fetchAlongside: { _ in },
-            willChange: willChange.map { callback in { (controller, _) in callback(controller) } },
+            willChange: wrappedWillChange,
             onChange: onChange,
-            didChange: didChange.map { callback in { (controller, _) in callback(controller) } })
+            didChange: wrappedDidChange)
+        
+        // Without bloody SE-0110:
+//        trackChanges(
+//            fetchAlongside: { _ in },
+//            willChange: willChange.map { callback in { (controller, _) in callback(controller) } },
+//            onChange: onChange,
+//            didChange: didChange.map { callback in { (controller, _) in callback(controller) } })
     }
 
     /// Registers changes notification callbacks.
@@ -348,16 +370,16 @@ public final class FetchedRecordsController<Record: RowConvertible> {
     fileprivate var fetchedItems: [Item<Record>]?
     
     /// The record comparator
-    fileprivate var itemsAreIdentical: ItemComparator<Record>
+    private var itemsAreIdentical: ItemComparator<Record>
     
     /// The record comparator factory (support for request change)
-    fileprivate let itemsAreIdenticalFactory: ItemComparatorFactory<Record>
+    private let itemsAreIdenticalFactory: ItemComparatorFactory<Record>
 
     /// The request
     fileprivate var request: Request
     
     /// The observed selection info
-    fileprivate var selectionInfo : SelectStatement.SelectionInfo
+    private var selectionInfo : SelectStatement.SelectionInfo
     
     /// The eventual current database observer
     private var observer: FetchedRecordsObserver<Record>?
@@ -461,29 +483,25 @@ extension FetchedRecordsController where Record: TableMapping {
         // non-null value.
         let itemsAreIdenticalFactory: ItemComparatorFactory<Record> = { db in
             // Extract primary key columns from database table
-            let columns: [String]
-            if let primaryKey = try db.primaryKey(Record.databaseTableName) {
-                columns = primaryKey.columns
-            } else if Record.selectsRowID {
-                columns = [Column.rowID.name]
-            } else {
-                // No primary key => can't compare rows
-                return { _ in false }
-            }
+            let columns = try db.primaryKey(Record.databaseTableName).columns
             
             // Compare primary keys
             assert(!columns.isEmpty)
             return { (lItem, rItem) in
+                var notNullValue = false
                 for column in columns {
-                    let lValue: DatabaseValue = lItem.row.value(named: column)
-                    let rValue: DatabaseValue = rItem.row.value(named: column)
+                    let lValue: DatabaseValue = lItem.row[column]
+                    let rValue: DatabaseValue = rItem.row[column]
                     if lValue != rValue {
                         // different primary keys
                         return false
                     }
+                    if !lValue.isNull || !rValue.isNull {
+                        notNullValue = true
+                    }
                 }
-                // identical primary keys
-                return true
+                // identical primary keys iff at least one value is not null
+                return notNullValue
             }
         }
         try self.init(
@@ -559,7 +577,7 @@ private final class FetchedRecordsObserver<Record: RowConvertible> : Transaction
 
 // MARK: - Changes
 
-fileprivate func makeFetchFunction<Record, T>(
+private func makeFetchFunction<Record, T>(
     controller: FetchedRecordsController<Record>,
     fetchAlongside: @escaping (Database) throws -> T,
     willProcessTransaction: @escaping () -> (),
@@ -634,7 +652,7 @@ fileprivate func makeFetchFunction<Record, T>(
     }
 }
 
-fileprivate func makeFetchAndNotifyChangesFunction<Record, T>(
+private func makeFetchAndNotifyChangesFunction<Record, T>(
     controller: FetchedRecordsController<Record>,
     fetchAlongside: @escaping (Database) throws -> T,
     itemsAreIdentical: @escaping ItemComparator<Record>,
@@ -704,7 +722,7 @@ fileprivate func makeFetchAndNotifyChangesFunction<Record, T>(
     }
 }
 
-fileprivate func computeChanges<Record>(from s: [Item<Record>], to t: [Item<Record>], itemsAreIdentical: ItemComparator<Record>) -> [ItemChange<Record>] {
+private func computeChanges<Record>(from s: [Item<Record>], to t: [Item<Record>], itemsAreIdentical: ItemComparator<Record>) -> [ItemChange<Record>] {
     let m = s.count
     let n = t.count
     
@@ -776,7 +794,7 @@ fileprivate func computeChanges<Record>(from s: [Item<Record>], to t: [Item<Reco
             func changedValues(from oldRow: Row, to newRow: Row) -> [String: DatabaseValue] {
                 var changedValues: [String: DatabaseValue] = [:]
                 for (column, newValue) in newRow {
-                    let oldValue: DatabaseValue? = oldRow.value(named: column)
+                    let oldValue: DatabaseValue? = oldRow[column]
                     if newValue != oldValue {
                         changedValues[column] = oldValue
                     }
@@ -840,7 +858,7 @@ fileprivate func computeChanges<Record>(from s: [Item<Record>], to t: [Item<Reco
     return standardize(changes: d[m][n], itemsAreIdentical: itemsAreIdentical)
 }
 
-fileprivate func identicalItemArrays<Record>(_ lhs: [Item<Record>], _ rhs: [Item<Record>]) -> Bool {
+private func identicalItemArrays<Record>(_ lhs: [Item<Record>], _ rhs: [Item<Record>]) -> Bool {
     guard lhs.count == rhs.count else {
         return false
     }
@@ -855,8 +873,8 @@ fileprivate func identicalItemArrays<Record>(_ lhs: [Item<Record>], _ rhs: [Item
 
 // MARK: - UITableView Support
 
-fileprivate typealias ItemComparator<Record: RowConvertible> = (Item<Record>, Item<Record>) -> Bool
-fileprivate typealias ItemComparatorFactory<Record: RowConvertible> = (Database) throws -> ItemComparator<Record>
+private typealias ItemComparator<Record: RowConvertible> = (Item<Record>, Item<Record>) -> Bool
+private typealias ItemComparatorFactory<Record: RowConvertible> = (Database) throws -> ItemComparator<Record>
 
 extension FetchedRecordsController {
     
@@ -986,8 +1004,6 @@ public enum FetchedRecordChange {
 }
 
 extension FetchedRecordChange: CustomStringConvertible {
-    
-    /// A textual representation of `self`.
     public var description: String {
         switch self {
         case .insertion(let indexPath):

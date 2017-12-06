@@ -49,14 +49,16 @@ extension UIViewController {
     
 }
 extension String {
-    
-    
     var html2AttributedString: NSAttributedString? {
         guard
             let data = data(using: String.Encoding.utf8)
             else { return nil }
         do {
-            return try NSAttributedString(data: data, options: [NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType,NSCharacterEncodingDocumentAttribute:String.Encoding.utf8], documentAttributes: nil)
+           return try NSAttributedString(data: data,
+                               options: [.documentType: NSAttributedString.DocumentType.html,
+                                         .characterEncoding: String.Encoding.utf8.rawValue],
+                               documentAttributes: nil)
+//            return try NSAttributedString(data: data, options: [NSAttributedString.DocumentAttributeKey.documentType:NSAttributedString.DocumentType.html,NSAttributedString.DocumentAttributeKey.characterEncoding:String.Encoding.utf8], documentAttributes: nil)
         } catch let error as NSError {
             print(error.localizedDescription)
             return  nil

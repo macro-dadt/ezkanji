@@ -106,8 +106,9 @@
     }
     
     extension Database {
-        /// MARK: - FTS5 Tokenizers
         
+        // MARK: - FTS5
+
         /// Private type that makes a pre-registered FTS5 tokenizer available
         /// through the FTS5Tokenizer protocol.
         private final class FTS5RegisteredTokenizer : FTS5Tokenizer {
@@ -188,7 +189,7 @@
         ///         }
         ///     }
         public func makeTokenizer(_ descriptor: FTS5TokenizerDescriptor) throws -> FTS5Tokenizer {
-            let api = try FTS5.api(self)
+            let api = FTS5.api(self)
             
             let xTokenizerPointer: UnsafeMutablePointer<fts5_tokenizer> = .allocate(capacity: 1)
             defer { xTokenizerPointer.deallocate(capacity: 1) }

@@ -4,10 +4,10 @@ Key Features
 ============
 
 - Parsing performance that meets or beats other popular SVG Frameworks
-- Optimized for extension, flexibility and developer joy
+- A simple architecture, optimized for extension, flexibility and developer joy
 - Multiple interface options (UIBezierPath, CAShapeLayer, UIView, and IBDesignable Interface Builder subclass)
 - A minimal cache for improved performance
-- Tested and [documented](https://github.com/mchoe/SwiftSVG/blob/feature/2.0.0/docs/index.html)
+- Tested and [documented](http://mchoe.github.io/SwiftSVG/)
 
 Who Should Use SwiftSVG
 =======================
@@ -21,7 +21,7 @@ At this time, gradients are not supported, but this is high on the list of featu
 Finally, if you're looking to extend this project, that's another good reason to use SwiftSVG. A lot of work has been put into making the code as extensible and maintainable as possible and will continue to be a core feature of future updates. Fork the project and I hope you share your changes.
 
 Table of Contents
------------------
+=================
 
 - [Install](#Install)
 - [Usage](#Usage)
@@ -61,6 +61,20 @@ self.addSubview(fistBump)
 
 #### Output:
 ![Put it here!](https://raw.githubusercontent.com/mchoe/SwiftSVG/master/images/fistBump.png)
+
+Or you can add an SVG file to your Asset Catalog. You should add it as a Data Asset like this:
+
+![Add a new Data Asset in your Asset Catalog](https://raw.githubusercontent.com/mchoe/SwiftSVG/master/images/assetCatalog.png)
+
+Then use the same initializer as above:
+
+```swift
+let cowboyHat = UIView(SVGNamed: "cowboyHat")     // In the asset catalog as a Data Asset
+self.addSubview(cowboyHat)
+```
+
+#### Output:
+![New York City.](https://raw.githubusercontent.com/mchoe/SwiftSVG/master/images/cowboyHat.png)
 
 You can also create a new UIView from a remote `URL`:
 
@@ -174,14 +188,15 @@ Finally, SwiftSVG provides a `UIView` subclass that is `IBInspectable`. Simply a
 ![Screenshot of SVGView in Interface Builder](https://raw.githubusercontent.com/mchoe/SwiftSVG/master/images/svgViewScreenshot.png)
 
 Credits
--------
+=======
 
 - [Fist](https://thenounproject.com/term/fist/303025/) - Francesco Cesqo Stefanini
 - [Pizza](http://thenounproject.com/term/pizza/7914/) - Justin Alexander
 - [Sock Puppet](http://thenounproject.com/term/sock-puppet/30622/) - Myles McCoy
 - [Tea](https://thenounproject.com/term/tea/200133) - parkjisun
+- [Cowboy Hat](https://thenounproject.com/term/cowboy-hat/1184115) - João Gabriel Mendes Corrêa
 
 License
--------
+=======
 
 SwiftSVG is released under the [MIT License](https://github.com/mchoe/SwiftSVG/blob/master/LICENSE).

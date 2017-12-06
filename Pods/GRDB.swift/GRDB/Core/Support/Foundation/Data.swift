@@ -1,13 +1,23 @@
 import Foundation
+#if SWIFT_PACKAGE
+    import CSQLite
+#elseif !GRDBCUSTOMSQLITE && !GRDBCIPHER
+    import SQLite3
+#endif
 
 /// Data is convertible to and from DatabaseValue.
-extension Data : DatabaseValueConvertible {
+extension Data : DatabaseValueConvertible, StatementColumnConvertible {
+    public init(sqliteStatement: SQLiteStatement, index: Int32) {
+        if let bytes = sqlite3_column_blob(sqliteStatement, Int32(index)) {
+            let count = Int(sqlite3_column_bytes(sqliteStatement, Int32(index)))
+            self.init(bytes: bytes, count: count) // copy bytes
+        } else {
+            self.init()
+        }
+    }
+    
     /// Returns a value that can be stored in the database.
     public var databaseValue: DatabaseValue {
-        // SQLite cant' store zero-length blobs.
-        guard count > 0 else {
-            return .null
-        }
         return DatabaseValue(storage: .blob(self))
     }
     

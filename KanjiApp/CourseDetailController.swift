@@ -89,15 +89,15 @@ class CourseDetailController: UICollectionViewController,UICollectionViewDelegat
     }
     
     private func descriptionAttributedText() ->  NSAttributedString{
-        let attributedText = NSMutableAttributedString(string: "Description\n", attributes: [NSFontAttributeName:UIFont.systemFont(ofSize: 14)])
+        let attributedText = NSMutableAttributedString(string: "Description\n", attributes: [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)])
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 10
         let range = NSMakeRange(0, attributedText.string.characters.count)
-        attributedText.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: range)
+        attributedText.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: range)
         
         if let desc = course?.desc{
-            attributedText.append(NSAttributedString(string: desc, attributes: [NSFontAttributeName:UIFont.systemFont(ofSize: 12), NSForegroundColorAttributeName:UIColor.darkGray]))
+            attributedText.append(NSAttributedString(string: desc, attributes: [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 12), NSAttributedStringKey.foregroundColor:UIColor.darkGray]))
         }
         return attributedText
     }

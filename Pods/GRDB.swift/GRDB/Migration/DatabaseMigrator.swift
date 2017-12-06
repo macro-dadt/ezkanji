@@ -10,29 +10,31 @@
 ///     var migrator = DatabaseMigrator()
 ///
 ///     // v1.0 database
-///     migrator.registerMigration("createPersons") { db in
-///         try db.execute(
-///             "CREATE TABLE persons (" +
-///                 "id INTEGER PRIMARY KEY, " +
-///                 "creationDate TEXT, " +
-///                 "name TEXT NOT NULL" +
-///             ")")
+///     migrator.registerMigration("createAuthors") { db in
+///         try db.execute("""
+///             CREATE TABLE authors (
+///                 id INTEGER PRIMARY KEY,
+///                 creationDate TEXT,
+///                 name TEXT NOT NULL
+///             )
+///             """)
 ///     }
 ///
 ///     migrator.registerMigration("createBooks") { db in
-///         try db.execute(
-///             "CREATE TABLE books (" +
-///                 "uuid TEXT PRIMARY KEY, " +
-///                 "ownerID INTEGER NOT NULL " +
-///                 "        REFERENCES persons(id) " +
-///                 "        ON DELETE CASCADE ON UPDATE CASCADE, " +
-///                 "title TEXT NOT NULL" +
-///             ")")
+///         try db.execute("""
+///             CREATE TABLE books (
+///                 uuid TEXT PRIMARY KEY,
+///                 authorID INTEGER NOT NULL
+///                          REFERENCES authors(id)
+///                          ON DELETE CASCADE ON UPDATE CASCADE,
+///                 title TEXT NOT NULL
+///             )
+///             """)
 ///     }
 ///
 ///     // v2.0 database
-///     migrator.registerMigration("AddAgeToPersons") { db in
-///         try db.execute("ALTER TABLE persons ADD COLUMN age INT")
+///     migrator.registerMigration("AddBirthYearToAuthors") { db in
+///         try db.execute("ALTER TABLE authors ADD COLUMN birthYear INT")
 ///     }
 ///
 ///     try migrator.migrate(dbQueue)
@@ -44,13 +46,14 @@ public struct DatabaseMigrator {
     
     /// Registers a migration.
     ///
-    ///     migrator.registerMigration("createPersons") { db in
-    ///         try db.execute(
-    ///             "CREATE TABLE persons (" +
-    ///                 "id INTEGER PRIMARY KEY, " +
-    ///                 "creationDate TEXT, " +
-    ///                 "name TEXT NOT NULL" +
-    ///             ")")
+    ///     migrator.registerMigration("createPlayers") { db in
+    ///         try db.execute("""
+    ///             CREATE TABLE players (
+    ///                 id INTEGER PRIMARY KEY,
+    ///                 creationDate TEXT,
+    ///                 name TEXT NOT NULL
+    ///             )
+    ///             """)
     ///     }
     ///
     /// - parameters:
@@ -64,13 +67,14 @@ public struct DatabaseMigrator {
     #if GRDBCUSTOMSQLITE || GRDBCIPHER
         /// Registers an advanced migration, as described at https://www.sqlite.org/lang_altertable.html#otheralter
         ///
-        ///     // Add a NOT NULL constraint on persons.name:
+        ///     // Add a NOT NULL constraint on players.name:
         ///     migrator.registerMigrationWithDeferredForeignKeyCheck("AddNotNullCheckOnName") { db in
-        ///         try db.execute(
-        ///             "CREATE TABLE new_persons (id INTEGER PRIMARY KEY, name TEXT NOT NULL);" +
-        ///             "INSERT INTO new_persons SELECT * FROM persons;" +
-        ///             "DROP TABLE persons;" +
-        ///             "ALTER TABLE new_persons RENAME TO persons;")
+        ///         try db.execute("""
+        ///             CREATE TABLE new_players (id INTEGER PRIMARY KEY, name TEXT NOT NULL);
+        ///             INSERT INTO new_players SELECT * FROM players;
+        ///             DROP TABLE players;
+        ///             ALTER TABLE new_players RENAME TO players;
+        ///             """)
         ///     }
         ///
         /// While your migration code runs with disabled foreign key checks, those
@@ -88,13 +92,14 @@ public struct DatabaseMigrator {
         @available(iOS 8.2, OSX 10.10, *)
         /// Registers an advanced migration, as described at https://www.sqlite.org/lang_altertable.html#otheralter
         ///
-        ///     // Add a NOT NULL constraint on persons.name:
+        ///     // Add a NOT NULL constraint on players.name:
         ///     migrator.registerMigrationWithDeferredForeignKeyCheck("AddNotNullCheckOnName") { db in
-        ///         try db.execute(
-        ///             "CREATE TABLE new_persons (id INTEGER PRIMARY KEY, name TEXT NOT NULL);" +
-        ///             "INSERT INTO new_persons SELECT * FROM persons;" +
-        ///             "DROP TABLE persons;" +
-        ///             "ALTER TABLE new_persons RENAME TO persons;")
+        ///         try db.execute("""
+        ///             CREATE TABLE new_players (id INTEGER PRIMARY KEY, name TEXT NOT NULL);
+        ///             INSERT INTO new_players SELECT * FROM players;
+        ///             DROP TABLE players;
+        ///             ALTER TABLE new_players RENAME TO players;
+        ///             """)
         ///     }
         ///
         /// While your migration code runs with disabled foreign key checks, those

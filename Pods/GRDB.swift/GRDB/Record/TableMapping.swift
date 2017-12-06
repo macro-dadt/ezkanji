@@ -4,32 +4,56 @@
 /// Types that adopt both TableMapping and RowConvertible are granted with
 /// built-in methods that allow to fetch instances identified by key:
 ///
-///     try Person.fetchOne(db, key: 123)  // Person?
-///     try Citizenship.fetchOne(db, key: ["personId": 12, "countryId": 45]) // Citizenship?
+///     try Player.fetchOne(db, key: 123)  // Player?
+///     try Citizenship.fetchOne(db, key: ["citizenId": 12, "countryId": 45]) // Citizenship?
 ///
 /// TableMapping is adopted by Record.
 public protocol TableMapping {
-    /// The name of the database table
+    /// The name of the database table used to build requests.
+    ///
+    ///     struct Player : TableMapping {
+    ///         static var databaseTableName = "players"
+    ///     }
+    ///
+    ///     // SELECT * FROM players
+    ///     try Player.fetchAll(db)
     static var databaseTableName: String { get }
     
-    /// This flag tells whether the hidden "rowid" column should be fetched
-    /// with other columns.
+    /// The default request selection.
     ///
-    /// Its default value is false:
+    /// Unless said otherwise, requests select all columns:
     ///
-    ///     // SELECT * FROM persons
-    ///     try Person.fetchAll(db)
+    ///     // SELECT * FROM players
+    ///     try Player.fetchAll(db)
     ///
-    /// When true, the rowid column is fetched:
+    /// You can provide a custom implementation and provide an explicit list
+    /// of columns:
     ///
-    ///     // SELECT *, rowid FROM persons
-    ///     try Person.fetchAll(db)
-    static var selectsRowID: Bool { get }
+    ///     struct RestrictedPlayer : TableMapping {
+    ///         static var databaseTableName = "players"
+    ///         static var databaseSelection = [Column("id"), Column("name")]
+    ///     }
+    ///
+    ///     // SELECT id, name FROM players
+    ///     try RestrictedPlayer.fetchAll(db)
+    ///
+    /// You can also add extra columns such as the `rowid` column:
+    ///
+    ///     struct ExtendedPlayer : TableMapping {
+    ///         static var databaseTableName = "players"
+    ///         static let databaseSelection: [SQLSelectable] = [AllColumns(), Column.rowID]
+    ///     }
+    ///
+    ///     // SELECT *, rowid FROM players
+    ///     try ExtendedPlayer.fetchAll(db)
+    static var databaseSelection: [SQLSelectable] { get }
 }
 
 extension TableMapping {
-    /// Default value: false.
-    public static var selectsRowID: Bool { return false }
+    /// Default value: `[AllColumns()]`.
+    public static var databaseSelection: [SQLSelectable] {
+        return [AllColumns()]
+    }
 }
 
 extension TableMapping {
@@ -48,9 +72,9 @@ extension TableMapping {
     
     // MARK: Key Requests
     
-    static func filter<Sequence: Swift.Sequence>(_ db: Database, keys: Sequence) throws -> QueryInterfaceRequest<Self> where Sequence.Iterator.Element: DatabaseValueConvertible {
+    static func filter<Sequence: Swift.Sequence>(_ db: Database, keys: Sequence) throws -> QueryInterfaceRequest<Self> where Sequence.Element: DatabaseValueConvertible {
         let primaryKey = try db.primaryKey(databaseTableName)
-        let columns = primaryKey?.columns.map { Column($0) } ?? [Column.rowID]
+        let columns = primaryKey.columns.map { Column($0) }
         GRDBPrecondition(columns.count == 1, "table \(databaseTableName) has multiple columns in its primary key")
         let column = columns[0]
         
@@ -71,7 +95,7 @@ extension TableMapping {
     // TODO: think about
     // - allowing non unique keys in Type.fetchOne(db, key: ...) ???
     // - allowing non unique keys in Type.fetchAll/Cursor(db, keys: ...)
-    // - forbidding Player.deleteOne(db, key: ["email": nil]) since this may delete several rows (case of a nullable unique key)
+    // - forbidding nil values: Player.deleteOne(db, key: ["email": nil]) may delete several rows (case of a nullable unique key)
     static func filter(_ db: Database, keys: [[String: DatabaseValueConvertible?]], fatalErrorOnMissingUniqueIndex: Bool = true) throws -> QueryInterfaceRequest<Self> {
         // SELECT * FROM table WHERE ((a=? AND b=?) OR (c=? AND d=?) OR ...)
         let keyPredicates: [SQLExpression] = try keys.map { key in
@@ -104,153 +128,5 @@ extension TableMapping {
         }
         
         return filter(predicate)
-    }
-}
-
-extension TableMapping {
-    
-    // MARK: Deleting All
-    
-    /// Deletes all records; returns the number of deleted rows.
-    ///
-    /// - parameter db: A database connection.
-    /// - returns: The number of deleted rows
-    /// - throws: A DatabaseError is thrown whenever an SQLite error occurs.
-    @discardableResult
-    public static func deleteAll(_ db: Database) throws -> Int {
-        return try all().deleteAll(db)
-    }
-}
-
-extension TableMapping {
-    
-    // MARK: Deleting by Single-Column Primary Key
-    
-    /// Delete records identified by their primary keys; returns the number of
-    /// deleted rows.
-    ///
-    ///     try Person.deleteAll(db, keys: [1, 2, 3])
-    ///
-    /// - parameters:
-    ///     - db: A database connection.
-    ///     - keys: A sequence of primary keys.
-    /// - returns: The number of deleted rows
-    @discardableResult
-    public static func deleteAll<Sequence: Swift.Sequence>(_ db: Database, keys: Sequence) throws -> Int where Sequence.Iterator.Element: DatabaseValueConvertible {
-        let keys = Array(keys)
-        if keys.isEmpty {
-            // Avoid hitting the database
-            return 0
-        }
-        return try filter(db, keys: keys).deleteAll(db)
-    }
-    
-    /// Delete a record, identified by its primary key; returns whether a
-    /// database row was deleted.
-    ///
-    ///     try Person.deleteOne(db, key: 123)
-    ///
-    /// - parameters:
-    ///     - db: A database connection.
-    ///     - key: A primary key value.
-    /// - returns: Whether a database row was deleted.
-    @discardableResult
-    public static func deleteOne<PrimaryKeyType: DatabaseValueConvertible>(_ db: Database, key: PrimaryKeyType?) throws -> Bool {
-        guard let key = key else {
-            // Avoid hitting the database
-            return false
-        }
-        return try deleteAll(db, keys: [key]) > 0
-    }
-}
-
-extension TableMapping {
-
-    // MARK: Deleting by Key
-    
-    /// Delete records identified by the provided unique keys (primary key or
-    /// any key with a unique index on it); returns the number of deleted rows.
-    ///
-    ///     try Person.deleteAll(db, keys: [["email": "a@example.com"], ["email": "b@example.com"]])
-    ///
-    /// - parameters:
-    ///     - db: A database connection.
-    ///     - keys: An array of key dictionaries.
-    /// - returns: The number of deleted rows
-    @discardableResult
-    public static func deleteAll(_ db: Database, keys: [[String: DatabaseValueConvertible?]]) throws -> Int {
-        if keys.isEmpty {
-            // Avoid hitting the database
-            return 0
-        }
-        return try filter(db, keys: keys).deleteAll(db)
-    }
-    
-    /// Delete a record, identified by a unique key (the primary key or any key
-    /// with a unique index on it); returns whether a database row was deleted.
-    ///
-    ///     Person.deleteOne(db, key: ["name": Arthur"])
-    ///
-    /// - parameters:
-    ///     - db: A database connection.
-    ///     - key: A dictionary of values.
-    /// - returns: Whether a database row was deleted.
-    @discardableResult
-    public static func deleteOne(_ db: Database, key: [String: DatabaseValueConvertible?]) throws -> Bool {
-        return try deleteAll(db, keys: [key]) > 0
-    }
-}
-
-extension TableMapping {
-    /// Returns a function that returns the primary key of a row.
-    ///
-    /// If the table has no primary key, and selectsRowID is true, the primary
-    /// key is the "rowid" column.
-    ///
-    ///     try dbQueue.inDatabase { db in
-    ///         let primaryKey = try Person.rowPrimaryKey(db)
-    ///         let row = try Row.fetchOne(db, "SELECT * FROM persons")!
-    ///         primaryKey(row) // ["id": 1]
-    ///     }
-    ///
-    /// - throws: A DatabaseError if table does not exist.
-    static func rowPrimaryKey(_ db: Database) throws -> (Row) -> [String: DatabaseValue] {
-        if let primaryKey = try db.primaryKey(databaseTableName) {
-            let columns = primaryKey.columns
-            return { row in Dictionary(keys: columns) { row.value(named: $0) } }
-        } else if selectsRowID {
-            return { row in [Column.rowID.name: row.value(Column.rowID)] }
-        } else {
-            return { _ in [:] }
-        }
-    }
-    
-    /// Returns a function that returns true if and only if two rows have the
-    /// same primary key and both primary keys contain at least one non-null
-    /// value.
-    ///
-    ///     try dbQueue.inDatabase { db in
-    ///         let comparator = try Person.primaryKeyRowComparator(db)
-    ///         let row0 = Row(["id": nil, "name": "Unsaved"])
-    ///         let row1 = Row(["id": 1, "name": "Arthur"])
-    ///         let row2 = Row(["id": 1, "name": "Arthur"])
-    ///         let row3 = Row(["id": 2, "name": "Barbara"])
-    ///         comparator(row0, row0) // false
-    ///         comparator(row1, row2) // true
-    ///         comparator(row1, row3) // false
-    ///     }
-    ///
-    /// - throws: A DatabaseError if table does not exist.
-    /// - attention: This method is deprecated. It will be removed is the next
-    ///   major version of the library, without any replacement. 
-    @available(*, deprecated)
-    public static func primaryKeyRowComparator(_ db: Database) throws -> (Row, Row) -> Bool {
-        let primaryKey = try rowPrimaryKey(db)
-        return { (lhs, rhs) in
-            let (lhs, rhs) = (primaryKey(lhs), primaryKey(rhs))
-            guard lhs.contains(where: { !$1.isNull }) else { return false }
-            guard rhs.contains(where: { !$1.isNull }) else { return false }
-            return lhs == rhs
-        }
     }
 }

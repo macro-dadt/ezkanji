@@ -53,12 +53,12 @@ public protocol DatabaseWriter : DatabaseReader {
     ///   state is the last committed state.
     ///
     ///         try writer.write { db in
-    ///             try db.execute("DELETE FROM persons")
+    ///             try db.execute("DELETE FROM players")
     ///             try writer.readFromCurrentState { db in
     ///                 // Guaranteed to be zero
-    ///                 try Int.fetchOne(db, "SELECT COUNT(*) FROM persons")!
+    ///                 try Int.fetchOne(db, "SELECT COUNT(*) FROM players")!
     ///             }
-    ///             try db.execute("INSERT INTO persons ...")
+    ///             try db.execute("INSERT INTO players ...")
     ///         }
     ///
     /// - When this method is called inside an uncommitted transation, the
@@ -71,12 +71,12 @@ public protocol DatabaseWriter : DatabaseReader {
     ///     the database in its last committed state.
     ///
     ///         try dbPool.write { db in
-    ///             try db.execute("DELETE FROM persons")
+    ///             try db.execute("DELETE FROM players")
     ///             db.inTransaction {
-    ///                 try db.execute("INSERT INTO persons ...")
+    ///                 try db.execute("INSERT INTO players ...")
     ///                 try dbPool.readFromCurrentState { db in
     ///                     // Zero
-    ///                     try Int.fetchOne(db, "SELECT COUNT(*) FROM persons")!
+    ///                     try Int.fetchOne(db, "SELECT COUNT(*) FROM players")!
     ///                 }
     ///                 return .commit
     ///             }
@@ -88,12 +88,12 @@ public protocol DatabaseWriter : DatabaseReader {
     ///     is run after the select.
     ///
     ///         try dbQueue.write { db in
-    ///             try db.execute("DELETE FROM persons")
+    ///             try db.execute("DELETE FROM players")
     ///             db.inTransaction {
-    ///                 try db.execute("INSERT INTO persons ...")
+    ///                 try db.execute("INSERT INTO players ...")
     ///                 try dbQueue.readFromCurrentState { db in
     ///                     // One
-    ///                     try Int.fetchOne(db, "SELECT COUNT(*) FROM persons")!
+    ///                     try Int.fetchOne(db, "SELECT COUNT(*) FROM players")!
     ///                 }
     ///                 return .commit
     ///             }
@@ -121,5 +121,66 @@ extension DatabaseWriter {
     /// Remove a transaction observer.
     public func remove(transactionObserver: TransactionObserver) {
         write { $0.remove(transactionObserver: transactionObserver) }
+    }
+}
+
+/// A type-erased DatabaseWriter
+///
+/// Instances of AnyDatabaseWriter forward their methods to an arbitrary
+/// underlying database writer.
+public final class AnyDatabaseWriter : DatabaseWriter {
+    private let base: DatabaseWriter
+    
+    /// Creates a database writer that wraps a base database writer.
+    public init(_ base: DatabaseWriter) {
+        self.base = base
+    }
+    
+    // MARK: - Reading from Database
+
+    public func read<T>(_ block: (Database) throws -> T) throws -> T {
+        return try base.read(block)
+    }
+
+    public func unsafeRead<T>(_ block: (Database) throws -> T) throws -> T {
+        return try base.unsafeRead(block)
+    }
+
+    public func unsafeReentrantRead<T>(_ block: (Database) throws -> T) throws -> T {
+        return try base.unsafeReentrantRead(block)
+    }
+
+    public func readFromCurrentState(_ block: @escaping (Database) -> Void) throws {
+        try base.readFromCurrentState(block)
+    }
+
+    // MARK: - Writing in Database
+
+    public func write<T>(_ block: (Database) throws -> T) rethrows -> T {
+        return try base.write(block)
+    }
+
+    public func unsafeReentrantWrite<T>(_ block: (Database) throws -> T) rethrows -> T {
+        return try base.unsafeReentrantWrite(block)
+    }
+    
+    // MARK: - Functions
+    
+    public func add(function: DatabaseFunction) {
+        base.add(function: function)
+    }
+    
+    public func remove(function: DatabaseFunction) {
+        base.remove(function: function)
+    }
+    
+    // MARK: - Collations
+    
+    public func add(collation: DatabaseCollation) {
+        base.add(collation: collation)
+    }
+    
+    public func remove(collation: DatabaseCollation) {
+        base.remove(collation: collation)
     }
 }

@@ -34,13 +34,13 @@ extension QueryInterfaceRequest {
     
     /// A new QueryInterfaceRequest with a new net of selected columns.
     ///
-    ///     // SELECT id, email FROM persons
-    ///     var request = Person.all()
+    ///     // SELECT id, email FROM players
+    ///     var request = Player.all()
     ///     request = request.select(Column("id"), Column("email"))
     ///
     /// Any previous selection is replaced:
     ///
-    ///     // SELECT email FROM persons
+    ///     // SELECT email FROM players
     ///     request
     ///         .select(Column("id"))
     ///         .select(Column("email"))
@@ -50,13 +50,13 @@ extension QueryInterfaceRequest {
     
     /// A new QueryInterfaceRequest with a new net of selected columns.
     ///
-    ///     // SELECT id, email FROM persons
-    ///     var request = Person.all()
+    ///     // SELECT id, email FROM players
+    ///     var request = Player.all()
     ///     request = request.select([Column("id"), Column("email")])
     ///
     /// Any previous selection is replaced:
     ///
-    ///     // SELECT email FROM persons
+    ///     // SELECT email FROM players
     ///     request
     ///         .select([Column("id")])
     ///         .select([Column("email")])
@@ -68,13 +68,13 @@ extension QueryInterfaceRequest {
     
     /// A new QueryInterfaceRequest with a new net of selected columns.
     ///
-    ///     // SELECT id, email FROM persons
-    ///     var request = Person.all()
+    ///     // SELECT id, email FROM players
+    ///     var request = Player.all()
     ///     request = request.select(sql: "id, email")
     ///
     /// Any previous selection is replaced:
     ///
-    ///     // SELECT email FROM persons
+    ///     // SELECT email FROM players
     ///     request
     ///         .select(sql: "id")
     ///         .select(sql: "email")
@@ -84,12 +84,12 @@ extension QueryInterfaceRequest {
     
     /// A new QueryInterfaceRequest which returns distinct rows.
     ///
-    ///     // SELECT DISTINCT * FROM persons
-    ///     var request = Person.all()
+    ///     // SELECT DISTINCT * FROM players
+    ///     var request = Player.all()
     ///     request = request.distinct()
     ///
-    ///     // SELECT DISTINCT name FROM persons
-    ///     var request = Person.select(Column("name"))
+    ///     // SELECT DISTINCT name FROM players
+    ///     var request = Player.select(Column("name"))
     ///     request = request.distinct()
     public func distinct() -> QueryInterfaceRequest<T> {
         var query = self.query
@@ -100,8 +100,8 @@ extension QueryInterfaceRequest {
     /// A new QueryInterfaceRequest with the provided *predicate* added to the
     /// eventual set of already applied predicates.
     ///
-    ///     // SELECT * FROM persons WHERE email = 'arthur@example.com'
-    ///     var request = Person.all()
+    ///     // SELECT * FROM players WHERE email = 'arthur@example.com'
+    ///     var request = Player.all()
     ///     request = request.filter(Column("email") == "arthur@example.com")
     public func filter(_ predicate: SQLExpressible) -> QueryInterfaceRequest<T> {
         var query = self.query
@@ -116,8 +116,8 @@ extension QueryInterfaceRequest {
     /// A new QueryInterfaceRequest with the provided *predicate* added to the
     /// eventual set of already applied predicates.
     ///
-    ///     // SELECT * FROM persons WHERE email = 'arthur@example.com'
-    ///     var request = Person.all()
+    ///     // SELECT * FROM players WHERE email = 'arthur@example.com'
+    ///     var request = Player.all()
     ///     request = request.filter(sql: "email = ?", arguments: ["arthur@example.com"])
     public func filter(sql: String, arguments: StatementArguments? = nil) -> QueryInterfaceRequest<T> {
         return filter(SQLExpressionLiteral(sql, arguments: arguments))
@@ -160,13 +160,13 @@ extension QueryInterfaceRequest {
     
     /// A new QueryInterfaceRequest with the provided *orderings*.
     ///
-    ///     // SELECT * FROM persons ORDER BY name
-    ///     var request = Person.all()
+    ///     // SELECT * FROM players ORDER BY name
+    ///     var request = Player.all()
     ///     request = request.order(Column("name"))
     ///
     /// Any previous ordering is replaced:
     ///
-    ///     // SELECT * FROM persons ORDER BY name
+    ///     // SELECT * FROM players ORDER BY name
     ///     request
     ///         .order(Column("email"))
     ///         .reversed()
@@ -177,13 +177,13 @@ extension QueryInterfaceRequest {
     
     /// A new QueryInterfaceRequest with the provided *orderings*.
     ///
-    ///     // SELECT * FROM persons ORDER BY name
-    ///     var request = Person.all()
+    ///     // SELECT * FROM players ORDER BY name
+    ///     var request = Player.all()
     ///     request = request.order([Column("name")])
     ///
     /// Any previous ordering is replaced:
     ///
-    ///     // SELECT * FROM persons ORDER BY name
+    ///     // SELECT * FROM players ORDER BY name
     ///     request
     ///         .order([Column("email")])
     ///         .reversed()
@@ -197,13 +197,13 @@ extension QueryInterfaceRequest {
     
     /// A new QueryInterfaceRequest with the provided *sql* used for sorting.
     ///
-    ///     // SELECT * FROM persons ORDER BY name
-    ///     var request = Person.all()
+    ///     // SELECT * FROM players ORDER BY name
+    ///     var request = Player.all()
     ///     request = request.order(sql: "name")
     ///
     /// Any previous ordering is replaced:
     ///
-    ///     // SELECT * FROM persons ORDER BY name
+    ///     // SELECT * FROM players ORDER BY name
     ///     request
     ///         .order(sql: "email")
     ///         .order(sql: "name")
@@ -213,8 +213,8 @@ extension QueryInterfaceRequest {
     
     /// A new QueryInterfaceRequest sorted in reversed order.
     ///
-    ///     // SELECT * FROM persons ORDER BY name DESC
-    ///     var request = Person.all().order(Column("name"))
+    ///     // SELECT * FROM players ORDER BY name DESC
+    ///     var request = Player.all().order(Column("name"))
     ///     request = request.reversed()
     public func reversed() -> QueryInterfaceRequest<T> {
         var query = self.query
@@ -225,8 +225,8 @@ extension QueryInterfaceRequest {
     /// A QueryInterfaceRequest which fetches *limit* rows, starting
     /// at *offset*.
     ///
-    ///     // SELECT * FROM persons LIMIT 1
-    ///     var request = Person.all()
+    ///     // SELECT * FROM players LIMIT 1
+    ///     var request = Player.all()
     ///     request = request.limit(1)
     public func limit(_ limit: Int, offset: Int? = nil) -> QueryInterfaceRequest<T> {
         var query = self.query
@@ -235,7 +235,7 @@ extension QueryInterfaceRequest {
     }
 }
 
-extension QueryInterfaceRequest {
+extension QueryInterfaceRequest where RowDecoder: MutablePersistable {
     
     // MARK: Deleting
     
@@ -257,22 +257,14 @@ extension TableMapping {
     
     /// Creates a QueryInterfaceRequest which fetches all records.
     ///
-    ///     // SELECT * FROM persons
-    ///     var request = Person.all()
+    ///     // SELECT * FROM players
+    ///     let request = Player.all()
     ///
-    /// If the `selectsRowID` type property is true, then the selection includes
-    /// the hidden "rowid" column:
-    ///
-    ///     // SELECT *, rowid FROM persons
-    ///     var request = Person.all()
+    /// The selection defaults to all columns. This default can be changed for
+    /// all requests by the `TableMapping.databaseSelection` property, or
+    /// for individual requests with the `TableMapping.select` method.
     public static func all() -> QueryInterfaceRequest<Self> {
-        let selection: [SQLSelectable]
-        if selectsRowID {
-            selection = [SQLStar(), Column.rowID]
-        } else {
-            selection = [SQLStar()]
-        }
-        return QueryInterfaceRequest(query: QueryInterfaceSelectQueryDefinition(select: selection, from: .table(name: databaseTableName, alias: nil)))
+        return QueryInterfaceRequest(query: QueryInterfaceSelectQueryDefinition(select: databaseSelection, from: .table(name: databaseTableName, alias: nil)))
     }
     
     /// Creates a QueryInterfaceRequest which fetches no record.
@@ -282,52 +274,48 @@ extension TableMapping {
     
     /// Creates a QueryInterfaceRequest which selects *selection*.
     ///
-    ///     // SELECT id, email FROM persons
-    ///     var request = Person.select(Column("id"), Column("email"))
+    ///     // SELECT id, email FROM players
+    ///     let request = Player.select(Column("id"), Column("email"))
     public static func select(_ selection: SQLSelectable...) -> QueryInterfaceRequest<Self> {
         return all().select(selection)
     }
     
     /// Creates a QueryInterfaceRequest which selects *selection*.
     ///
-    ///     // SELECT id, email FROM persons
-    ///     var request = Person.select([Column("id"), Column("email")])
+    ///     // SELECT id, email FROM players
+    ///     let request = Player.select([Column("id"), Column("email")])
     public static func select(_ selection: [SQLSelectable]) -> QueryInterfaceRequest<Self> {
         return all().select(selection)
     }
     
     /// Creates a QueryInterfaceRequest which selects *sql*.
     ///
-    ///     // SELECT id, email FROM persons
-    ///     var request = Person.select(sql: "id, email")
+    ///     // SELECT id, email FROM players
+    ///     let request = Player.select(sql: "id, email")
     public static func select(sql: String, arguments: StatementArguments? = nil) -> QueryInterfaceRequest<Self> {
         return all().select(sql: sql, arguments: arguments)
     }
     
     /// Creates a QueryInterfaceRequest with the provided *predicate*.
     ///
-    ///     // SELECT * FROM persons WHERE email = 'arthur@example.com'
-    ///     var request = Person.filter(Column("email") == "arthur@example.com")
+    ///     // SELECT * FROM players WHERE email = 'arthur@example.com'
+    ///     let request = Player.filter(Column("email") == "arthur@example.com")
     ///
-    /// If the `selectsRowID` type property is true, then the selection includes
-    /// the hidden "rowid" column:
-    ///
-    ///     // SELECT *, rowid FROM persons WHERE email = 'arthur@example.com'
-    ///     var request = Person.filter(Column("email") == "arthur@example.com")
+    /// The selection defaults to all columns. This default can be changed for
+    /// all requests by the `TableMapping.databaseSelection` property, or
+    /// for individual requests with the `TableMapping.select` method.
     public static func filter(_ predicate: SQLExpressible) -> QueryInterfaceRequest<Self> {
         return all().filter(predicate)
     }
     
     /// Creates a QueryInterfaceRequest with the provided *predicate*.
     ///
-    ///     // SELECT * FROM persons WHERE email = 'arthur@example.com'
-    ///     var request = Person.filter(sql: "email = ?", arguments: ["arthur@example.com"])
+    ///     // SELECT * FROM players WHERE email = 'arthur@example.com'
+    ///     let request = Player.filter(sql: "email = ?", arguments: ["arthur@example.com"])
     ///
-    /// If the `selectsRowID` type property is true, then the selection includes
-    /// the hidden "rowid" column:
-    ///
-    ///     // SELECT *, rowid FROM persons WHERE email = 'arthur@example.com'
-    ///     var request = Person.filter(sql: "email = ?", arguments: ["arthur@example.com"])
+    /// The selection defaults to all columns. This default can be changed for
+    /// all requests by the `TableMapping.databaseSelection` property, or
+    /// for individual requests with the `TableMapping.select` method.
     public static func filter(sql: String, arguments: StatementArguments? = nil) -> QueryInterfaceRequest<Self> {
         return all().filter(sql: sql, arguments: arguments)
     }
@@ -335,14 +323,12 @@ extension TableMapping {
     /// Creates a QueryInterfaceRequest sorted according to the
     /// provided *orderings*.
     ///
-    ///     // SELECT * FROM persons ORDER BY name
-    ///     var request = Person.order(Column("name"))
+    ///     // SELECT * FROM players ORDER BY name
+    ///     let request = Player.order(Column("name"))
     ///
-    /// If the `selectsRowID` type property is true, then the selection includes
-    /// the hidden "rowid" column:
-    ///
-    ///     // SELECT *, rowid FROM persons ORDER BY name
-    ///     var request = Person.order(Column("name"))
+    /// The selection defaults to all columns. This default can be changed for
+    /// all requests by the `TableMapping.databaseSelection` property, or
+    /// for individual requests with the `TableMapping.select` method.
     public static func order(_ orderings: SQLOrderingTerm...) -> QueryInterfaceRequest<Self> {
         return all().order(orderings)
     }
@@ -350,28 +336,24 @@ extension TableMapping {
     /// Creates a QueryInterfaceRequest sorted according to the
     /// provided *orderings*.
     ///
-    ///     // SELECT * FROM persons ORDER BY name
-    ///     var request = Person.order([Column("name")])
+    ///     // SELECT * FROM players ORDER BY name
+    ///     let request = Player.order([Column("name")])
     ///
-    /// If the `selectsRowID` type property is true, then the selection includes
-    /// the hidden "rowid" column:
-    ///
-    ///     // SELECT *, rowid FROM persons ORDER BY name
-    ///     var request = Person.order([Column("name")])
+    /// The selection defaults to all columns. This default can be changed for
+    /// all requests by the `TableMapping.databaseSelection` property, or
+    /// for individual requests with the `TableMapping.select` method.
     public static func order(_ orderings: [SQLOrderingTerm]) -> QueryInterfaceRequest<Self> {
         return all().order(orderings)
     }
     
     /// Creates a QueryInterfaceRequest sorted according to *sql*.
     ///
-    ///     // SELECT * FROM persons ORDER BY name
-    ///     var request = Person.order(sql: "name")
+    ///     // SELECT * FROM players ORDER BY name
+    ///     let request = Player.order(sql: "name")
     ///
-    /// If the `selectsRowID` type property is true, then the selection includes
-    /// the hidden "rowid" column:
-    ///
-    ///     // SELECT *, rowid FROM persons ORDER BY name
-    ///     var request = Person.order(sql: "name")
+    /// The selection defaults to all columns. This default can be changed for
+    /// all requests by the `TableMapping.databaseSelection` property, or
+    /// for individual requests with the `TableMapping.select` method.
     public static func order(sql: String, arguments: StatementArguments? = nil) -> QueryInterfaceRequest<Self> {
         return all().order(sql: sql, arguments: arguments)
     }
@@ -379,14 +361,12 @@ extension TableMapping {
     /// Creates a QueryInterfaceRequest which fetches *limit* rows, starting at
     /// *offset*.
     ///
-    ///     // SELECT * FROM persons LIMIT 1
-    ///     var request = Person.limit(1)
+    ///     // SELECT * FROM players LIMIT 1
+    ///     let request = Player.limit(1)
     ///
-    /// If the `selectsRowID` type property is true, then the selection includes
-    /// the hidden "rowid" column:
-    ///
-    ///     // SELECT *, rowid FROM persons LIMIT 1
-    ///     var request = Person.limit(1)
+    /// The selection defaults to all columns. This default can be changed for
+    /// all requests by the `TableMapping.databaseSelection` property, or
+    /// for individual requests with the `TableMapping.select` method.
     public static func limit(_ limit: Int, offset: Int? = nil) -> QueryInterfaceRequest<Self> {
         return all().limit(limit, offset: offset)
     }

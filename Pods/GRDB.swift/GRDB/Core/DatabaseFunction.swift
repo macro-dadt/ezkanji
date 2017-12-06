@@ -1,5 +1,7 @@
 #if SWIFT_PACKAGE
     import CSQLite
+#elseif !GRDBCUSTOMSQLITE && !GRDBCIPHER
+    import SQLite3
 #endif
 
 /// An SQL function or aggregate.
@@ -8,8 +10,8 @@ public final class DatabaseFunction {
     let argumentCount: Int32?
     let pure: Bool
     private let kind: Kind
-    fileprivate var nArg: Int32 { return argumentCount ?? -1 }
-    fileprivate var eTextRep: Int32 { return (SQLITE_UTF8 | (pure ? SQLITE_DETERMINISTIC : 0)) }
+    private var nArg: Int32 { return argumentCount ?? -1 }
+    private var eTextRep: Int32 { return (SQLITE_UTF8 | (pure ? SQLITE_DETERMINISTIC : 0)) }
     
     /// Returns an SQL function.
     ///
@@ -356,10 +358,10 @@ public protocol DatabaseAggregate {
     /// aggregate function.
     ///
     ///    -- One value
-    ///    SELECT maxLength(name) FROM persons
+    ///    SELECT maxLength(name) FROM players
     ///
     ///    -- Two values
-    ///    SELECT maxFullNameLength(firstName, lastName) FROM persons
+    ///    SELECT maxFullNameLength(firstName, lastName) FROM players
     ///
     /// This method is never called after the finalize() method has been called.
     mutating func step(_ dbValues: [DatabaseValue]) throws

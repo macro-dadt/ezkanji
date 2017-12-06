@@ -65,20 +65,54 @@ public extension UIView {
      ```
      let view = UIView(SVGNamed: "hawaiiFlowers")
      ```
-     - Parameter SVGNamed: The name of the SVG resource in the main bundle with an `.svg` extension.
+     - Parameter SVGNamed: The name of the SVG resource in the main bundle with an `.svg` extension or the name an asset in the main Asset Catalog as a Data Asset.
      - Parameter parser: The optional parser to use to parse the SVG file
      - Parameter completion: A required completion block to execute once the SVG has completed parsing. The passed `SVGLayer` will be added to this view's sublayers before executing the completion block
      */
     public convenience init(SVGNamed: String, parser: SVGParser? = nil, completion: ((SVGLayer) -> ())? = nil) {
-        guard let svgURL = Bundle.main.url(forResource: SVGNamed, withExtension: "svg") else {
-            self.init()
-            return
-        }
-        do {
-            let data = try Data(contentsOf: svgURL)
-            self.init(SVGData: data, parser: parser, completion: completion)
-        } catch {
-            self.init()
+        
+        // TODO: This is too many guards to really make any sense. Also approaching on the
+        // pyramid of death Refactor this at some point to be able to work cross-platform.
+        if #available(iOS 9.0, OSX 10.11, *) {
+            
+            var data: Data?
+            #if os(iOS)
+            if let asset = NSDataAsset(name: SVGNamed) {
+                data = asset.data
+            }
+            #elseif os(OSX)
+            if let asset = NSDataAsset(name: NSDataAsset.Name(SVGNamed)) {
+                data = asset.data
+            }
+            #endif
+            
+            guard let unwrapped = data else {
+                guard let svgURL = Bundle.main.url(forResource: SVGNamed, withExtension: "svg") else {
+                    self.init()
+                    return
+                }
+                do {
+                    let thisData = try Data(contentsOf: svgURL)
+                    self.init(SVGData: thisData)
+                } catch {
+                    self.init()
+                    return
+                }
+                return
+            }
+            self.init(SVGData: unwrapped)
+        } else {
+            guard let svgURL = Bundle.main.url(forResource: SVGNamed, withExtension: "svg") else {
+                self.init()
+                return
+            }
+            do {
+                let data = try Data(contentsOf: svgURL)
+                self.init(SVGData: data)
+            } catch {
+                self.init()
+                return
+            }
         }
     }
     

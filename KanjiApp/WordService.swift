@@ -15,10 +15,10 @@ class WordService: NSObject {
             do{
                 for row in try Row.fetchAll(db,"select * from word where level = \(level) OR source like'%\(source)%'"){
                     let word = Word()
-                    word.story = (row.value(named: "story") ?? "") as String
-                    word.mean = (row.value(named: "mean") ?? "") as String
-                    word.story_image = row.value(named: "story_image" ) as String
-                    word.level = (row.value(named: "level") ?? 0) as! Int
+                    word.story = (row["story"] ?? "") as String
+                    word.mean = (row["mean"] ?? "") as String
+                    word.story_image = row["story_image"]  as String
+                    word.level = (row["level"] ?? 0) as! Int
                     words.append(word)
                 }
                 callback(words)

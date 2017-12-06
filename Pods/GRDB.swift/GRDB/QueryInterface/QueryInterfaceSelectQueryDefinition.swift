@@ -59,26 +59,7 @@ struct QueryInterfaceSelectQueryDefinition {
             sql += " HAVING " + havingExpression.expressionSQL(&arguments)
         }
         
-        var orderings = self.orderings
-        if isReversed {
-            if orderings.isEmpty {
-                // https://www.sqlite.org/lang_createtable.html#rowid
-                //
-                // > The rowid value can be accessed using one of the special
-                // > case-independent names "rowid", "oid", or "_rowid_" in
-                // > place of a column name. If a table contains a user defined
-                // > column named "rowid", "oid" or "_rowid_", then that name
-                // > always refers the explicitly declared column and cannot be
-                // > used to retrieve the integer rowid value.
-                //
-                // Here we assume that rowid is not a custom column.
-                // TODO: support for user-defined rowid column.
-                // TODO: support for WITHOUT ROWID tables.
-                orderings = [Column.rowID.desc]
-            } else {
-                orderings = orderings.map { $0.reversed }
-            }
-        }
+        let orderings = self.queryOrderings
         if !orderings.isEmpty {
             sql += " ORDER BY " + orderings.map { $0.orderingTermSQL(&arguments) }.joined(separator: ", ")
         }
@@ -101,11 +82,6 @@ struct QueryInterfaceSelectQueryDefinition {
             fatalError("Can't delete query with GROUP BY expression")
         }
         
-        guard limit == nil else {
-            // Programmer error
-            fatalError("Can't delete query with limit")
-        }
-        
         var sql = "DELETE"
         var arguments: StatementArguments? = StatementArguments()
         
@@ -117,9 +93,46 @@ struct QueryInterfaceSelectQueryDefinition {
             sql += " WHERE " + whereExpression.expressionSQL(&arguments)
         }
         
+        if let limit = limit {
+            let orderings = self.queryOrderings
+            if !orderings.isEmpty {
+                sql += " ORDER BY " + orderings.map { $0.orderingTermSQL(&arguments) }.joined(separator: ", ")
+            }
+            
+            if Database.sqliteCompileOptions.contains("ENABLE_UPDATE_DELETE_LIMIT") {
+                sql += " LIMIT " + limit.sql
+            } else {
+                fatalError("Can't delete query with limit")
+            }
+        }
+        
         let statement = try db.makeUpdateStatement(sql)
         statement.arguments = arguments!
         return statement
+    }
+    
+    private var queryOrderings: [SQLOrderingTerm] {
+        if isReversed {
+            if orderings.isEmpty {
+                // https://www.sqlite.org/lang_createtable.html#rowid
+                //
+                // > The rowid value can be accessed using one of the special
+                // > case-independent names "rowid", "oid", or "_rowid_" in
+                // > place of a column name. If a table contains a user defined
+                // > column named "rowid", "oid" or "_rowid_", then that name
+                // > always refers the explicitly declared column and cannot be
+                // > used to retrieve the integer rowid value.
+                //
+                // Here we assume that rowid is not a custom column.
+                // TODO: support for user-defined rowid column.
+                // TODO: support for WITHOUT ROWID tables.
+                return [Column.rowID.desc]
+            } else {
+                return orderings.map { $0.reversed }
+            }
+        } else {
+            return orderings
+        }
     }
     
     /// Remove ordering
@@ -176,7 +189,7 @@ extension QueryInterfaceSelectQueryDefinition : Request {
             // ->
             // SELECT COUNT(*) FROM tableName ...
             var countQuery = unorderedQuery
-            countQuery.selection = [SQLExpressionCount(SQLStar())]
+            countQuery.selection = [SQLExpressionCount(AllColumns())]
             return countQuery
         }
     }
@@ -184,7 +197,7 @@ extension QueryInterfaceSelectQueryDefinition : Request {
     // SELECT COUNT(*) FROM (self)
     private var trivialCountQuery: QueryInterfaceSelectQueryDefinition {
         return QueryInterfaceSelectQueryDefinition(
-            select: [SQLExpressionCount(SQLStar())],
+            select: [SQLExpressionCount(AllColumns())],
             from: .query(query: unorderedQuery, alias: nil))
     }
 }
@@ -227,8 +240,8 @@ struct SQLLimit {
 extension SQLCount {
     var sqlSelectable: SQLSelectable {
         switch self {
-        case .star:
-            return SQLExpressionCount(SQLStar())
+        case .all:
+            return SQLExpressionCount(AllColumns())
         case .distinct(let expression):
             return SQLExpressionCountDistinct(expression)
         }

@@ -30,9 +30,9 @@ open class Record : RowConvertible, TableMapping, Persistable {
     /// This table name is required by the insert, update, save, delete,
     /// and exists methods.
     ///
-    ///     class Person : Record {
+    ///     class Player : Record {
     ///         override class var databaseTableName: String {
-    ///             return "persons"
+    ///             return "players"
     ///         }
     ///     }
     ///
@@ -60,20 +60,37 @@ open class Record : RowConvertible, TableMapping, Persistable {
         return PersistenceConflictPolicy(insert: .abort, update: .abort)
     }
     
-    /// This flag tells whether the hidden "rowid" column should be fetched
-    /// with other columns.
+    /// The default request selection.
     ///
-    /// Its default value is false:
+    /// Unless this method is overriden, requests select all columns:
     ///
-    ///     // SELECT * FROM persons
-    ///     try Person.fetchAll(db)
+    ///     // SELECT * FROM players
+    ///     try Player.fetchAll(db)
     ///
-    /// When true, the rowid column is fetched:
+    /// You can override this property and provide an explicit list
+    /// of columns:
     ///
-    ///     // SELECT *, rowid FROM persons
-    ///     try Person.fetchAll(db)
-    open class var selectsRowID: Bool {
-        return false
+    ///     class RestrictedPlayer : Record {
+    ///         override static var databaseSelection: [SQLSelectable] {
+    ///             return [Column("id"), Column("name")]
+    ///         }
+    ///     }
+    ///
+    ///     // SELECT id, name FROM players
+    ///     try RestrictedPlayer.fetchAll(db)
+    ///
+    /// You can also add extra columns such as the `rowid` column:
+    ///
+    ///     class ExtendedPlayer : Player {
+    ///         override static var databaseSelection: [SQLSelectable] {
+    ///             return [AllColumns(), Column.rowID]
+    ///         }
+    ///     }
+    ///
+    ///     // SELECT *, rowid FROM players
+    ///     try ExtendedPlayer.fetchAll(db)
+    open class var databaseSelection: [SQLSelectable] {
+        return [AllColumns()]
     }
     
 
@@ -84,7 +101,7 @@ open class Record : RowConvertible, TableMapping, Persistable {
     ///
     /// Primary key columns, if any, must be included.
     ///
-    ///     class Person : Record {
+    ///     class Player : Record {
     ///         var id: Int64?
     ///         var name: String?
     ///
@@ -107,7 +124,7 @@ open class Record : RowConvertible, TableMapping, Persistable {
     ///
     /// The implementation of the base Record class does nothing.
     ///
-    ///     class Person : Record {
+    ///     class Player : Record {
     ///         var id: Int64?
     ///         var name: String?
     ///
@@ -196,7 +213,7 @@ open class Record : RowConvertible, TableMapping, Persistable {
             // Loop until we find a change, or exhaust columns:
             while let (column, newValue) = newValueIterator.next() {
                 let new = newValue?.databaseValue ?? .null
-                guard let oldRow = oldRow, let old: DatabaseValue = oldRow.value(named: column) else {
+                guard let oldRow = oldRow, let old: DatabaseValue = oldRow[column] else {
                     return (column: column, old: nil)
                 }
                 if new != old {
@@ -282,6 +299,28 @@ open class Record : RowConvertible, TableMapping, Persistable {
         
         // Set hasPersistentChangedValues to false
         referenceRow = Row(dao.persistenceContainer)
+    }
+    
+    /// If the record has been changed, executes an UPDATE statement so that
+    /// those changes and only those changes are saved in the database.
+    ///
+    /// On success, this method sets the *hasPersistentChangedValues* flag
+    /// to false.
+    ///
+    /// This method is guaranteed to have saved the eventual changes in the
+    /// database if it returns without error.
+    ///
+    /// - parameter db: A database connection.
+    /// - parameter columns: The columns to update.
+    /// - throws: A DatabaseError is thrown whenever an SQLite error occurs.
+    ///   PersistenceError.recordNotFound is thrown if the primary key does not
+    ///   match any row in the database and record could not be updated.
+    final public func updateChanges(_ db: Database) throws {
+        let changedColumns = Set(persistentChangedValues.keys)
+        guard !changedColumns.isEmpty else {
+            return
+        }
+        try update(db, columns: changedColumns)
     }
     
     /// Executes an INSERT or an UPDATE statement so that `self` is saved in
