@@ -53,7 +53,7 @@ class WordDetailViewController:DetailParentViewController {
                           .characterEncoding: String.Encoding.utf8.rawValue],
                 documentAttributes: nil)
             storyTextView.attributedText = attrStr
-        } catch let error {
+        } catch _ {
             
         }
     }

@@ -93,7 +93,7 @@ class CourseDetailController: UICollectionViewController,UICollectionViewDelegat
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 10
-        let range = NSMakeRange(0, attributedText.string.characters.count)
+        let range = NSMakeRange(0, attributedText.string.count)
         attributedText.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: range)
         
         if let desc = course?.desc{
